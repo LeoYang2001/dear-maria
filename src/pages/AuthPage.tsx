@@ -1,10 +1,13 @@
 import { Heart } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import bowingRabbitGirl from "../assets/bowing-rabbit-girl.gif";
 import bowingRabbitGirlPng from "../assets/bowing-rabbit-girl.png";
 import bowingRabbitBoy from "../assets/bowing-rabbit-boy.gif";
 import bowingRabbitBoyPng from "../assets/bowing-rabbit-boy.png";
+import HeartBeat from "../components/HeartBeat";
+import { setCurrentUser } from "../redux/authSlice";
 
 const AuthPage: React.FC = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<
@@ -17,6 +20,7 @@ const AuthPage: React.FC = () => {
   const mariaImageRef = useRef<HTMLImageElement>(null);
   const leoImageRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const mariaImg = mariaImageRef.current;
@@ -62,7 +66,8 @@ const AuthPage: React.FC = () => {
     // TODO: Add authentication logic here
     console.log("Auth attempt:", { character: selectedCharacter, password });
 
-    // For now, just navigate to main page after any form submission
+    // Set current user in Redux and navigate to main page
+    dispatch(setCurrentUser(selectedCharacter));
     navigate("/main");
   };
 
@@ -76,9 +81,7 @@ const AuthPage: React.FC = () => {
       <div className="w-[40%] bg-white border border-gray-50 rounded-3xl p-12 shadow-lg">
         {/* Header */}
         <div className="mb-12 flex flex-col items-center text-center">
-          <div className="heart-beat">
-            <Heart size={58} opacity={1} color="#e87c87" fill="#e87c87" />
-          </div>
+          <HeartBeat />
           <h1 className="font-elegant mb-3 text-3xl font-bold tracking-tight text-gray-900">
             Every little moment we share lives here.
           </h1>
@@ -95,9 +98,9 @@ const AuthPage: React.FC = () => {
               onClick={() => setSelectedCharacter(character.id)}
               onMouseEnter={() => handleMouseEnter(character.id)}
               onMouseLeave={() => handleMouseLeave()}
-              className={`group rounded-2xl p-8 transition-all duration-300 border-2 ${
+              className={`character-button group cursor-pointer rounded-2xl p-8 transition-all duration-300 border-2 ${
                 selectedCharacter === character.id
-                  ? "border-pink-bright bg-pink-light/10 shadow-lg"
+                  ? "selected border-pink-bright bg-pink-light/10 shadow-lg"
                   : "border-gray-200 hover:border-pink-light"
               }`}
             >
@@ -125,10 +128,12 @@ const AuthPage: React.FC = () => {
         </div>
 
         {/* Password Input */}
-        <div className="mb-8 space-y-3 animate-in fade-in duration-300">
-          <label className="block text-sm font-medium text-gray-700">
-            Enter your password
-          </label>
+        <div
+          style={{
+            opacity: selectedCharacter ? "1" : "0.2",
+          }}
+          className="mb-8 space-y-3 animate-in fade-in duration-300"
+        >
           <input
             disabled={!selectedCharacter}
             type="password"
@@ -144,10 +149,11 @@ const AuthPage: React.FC = () => {
           <button
             type="submit"
             disabled={!selectedCharacter || !password}
-            className={`w-full rounded-full py-4 text-base font-semibold transition-all duration-300 ${
-              selectedCharacter && password
-                ? "bg-pink-light text-white hover:bg-pink-bright shadow-lg hover:shadow-xl"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            style={{
+              background:
+                !selectedCharacter || !password ? "#f9d5d7" : " #ff7e85",
+            }}
+            className={`w-full rounded-full py-4 text-base cursor-pointer font-semibold transition-all duration-300
             }`}
           >
             Enter Our World
