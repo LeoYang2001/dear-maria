@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import lettersReducer from "./lettersSlice";
+import todoReducer from "./todoSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     letters: lettersReducer,
+    todos: todoReducer,
   },
 });
 

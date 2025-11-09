@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import type { RootState } from "../redux/store";
@@ -89,10 +89,15 @@ export const letterMockData = [
 const LettersPage: React.FC = () => {
   const [lettersInfo] = useState(letterMockData);
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const visitedLetterIds = useSelector(
     (state: RootState) => state.letters.visitedLetterIds
   );
+
+  console.log("location.state?.disableAnimation:", location.state);
+  // Check if animation should be disabled (when returning from letter detail)
+  const disableAnimation = location.state?.disableAnimation === true;
 
   const handleLetterClick = (
     letterId: number,
@@ -108,13 +113,29 @@ const LettersPage: React.FC = () => {
   return (
     <div className=" w-full h-full flex flex-col justify-start items-center pt-36  ">
       <div className=" w-[80%] h-[30%]  flex flex-row justify-center items-center ">
-        {lettersInfo.slice(0, 5).map((letter) => (
+        {lettersInfo.slice(0, 5).map((letter, index) => (
           <motion.div
             key={letter.id}
             layoutId={`letter-${letter.id}`}
             className={`px-3 py-3 letterDiv cursor-pointer relative ${
               visitedLetterIds.includes(letter.id) ? "selected" : ""
             }`}
+            initial={
+              !disableAnimation
+                ? { opacity: 0, scale: 0.8 }
+                : { opacity: 1, scale: 1 }
+            }
+            animate={{ opacity: 1, scale: 1 }}
+            transition={
+              !disableAnimation
+                ? {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                    delay: index * 0.1,
+                  }
+                : { type: "spring", stiffness: 300, damping: 30, delay: 0 }
+            }
             style={{
               height: 180,
               display: "flex",
@@ -124,7 +145,6 @@ const LettersPage: React.FC = () => {
             }}
             onClick={() => handleLetterClick(letter.id, letter)}
             whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <h2
               style={{
@@ -145,23 +165,39 @@ const LettersPage: React.FC = () => {
         ))}
       </div>
       <div className=" w-[85%] h-[30%] flex flex-row justify-center items-center ">
-        {lettersInfo.slice(5, 14).map((letter) => (
+        {lettersInfo.slice(5, 14).map((letter, index) => (
           <motion.div
             key={letter.id}
             layoutId={`letter-${letter.id}`}
             className={`px-3 py-3 letterDiv cursor-pointer relative ${
               visitedLetterIds.includes(letter.id) ? "selected" : ""
             }`}
+            initial={
+              !disableAnimation
+                ? { opacity: 0, scale: 0.8 }
+                : { opacity: 1, scale: 1 }
+            }
+            animate={{ opacity: 1, scale: 1 }}
+            transition={
+              !disableAnimation
+                ? {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                    delay: (index + 5) * 0.1,
+                  }
+                : { type: "spring", stiffness: 300, damping: 30, delay: 0 }
+            }
             style={{
               height: 180,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+
               margin: "0 15px",
             }}
             onClick={() => handleLetterClick(letter.id, letter)}
             whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <h2
               style={{

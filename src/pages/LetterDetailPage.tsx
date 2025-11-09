@@ -34,7 +34,7 @@ const LetterDetailPage: React.FC = () => {
     >
       {/* Back Button */}
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/main", { state: { disableAnimation: true } })}
         className="flex items-center space-x-2 text-pink-bright hover:text-pink-600 transition-colors mb-8 w-fit"
       >
         <ArrowLeft size={30} />

@@ -1,76 +1,121 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { Trash2, Plus, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { RootState } from "../redux/store";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+import type { RootState, AppDispatch } from "../redux/store";
+import SearchAddButton from "../components/SearchAddButton";
+import AddTodoModal from "../components/AddTodoModal";
+import TodoItem from "../components/TodoItem";
+import type { Todo } from "../types/common/Todo";
 import {
-  checklistMockData,
-  type ChecklistItem,
-} from "../data/checklistMockData";
+  fetchAllTodos,
+  addNewTodo,
+  updateTodoStatusAsync,
+  deleteTodoAsync,
+} from "../redux/todoSlice";
+
+// Blur search - fuzzy matching algorithm
+const blurSearch = (query: string, text: string): number => {
+  const q = query.toLowerCase();
+  const t = text.toLowerCase();
+  let score = 0;
+  let queryIndex = 0;
+  let consecutiveMatches = 0;
+
+  for (let i = 0; i < t.length && queryIndex < q.length; i++) {
+    if (t[i] === q[queryIndex]) {
+      score += 10 + consecutiveMatches * 5; // Bonus for consecutive matches
+      consecutiveMatches++;
+      queryIndex++;
+    } else {
+      consecutiveMatches = 0;
+    }
+  }
+
+  // Only return score if all query characters were found
+  return queryIndex === q.length ? score : -1;
+};
 
 const ChecklistPage: React.FC = () => {
-  const [items, setItems] = useState<ChecklistItem[]>(checklistMockData);
-  const [newItemTitle, setNewItemTitle] = useState("");
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
-  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const [inputValue, setInputValue] = useState("");
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Calculate progress
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const { todos: items } = useSelector((state: RootState) => state.todos);
+
+  // Fetch todos on component mount
+  useEffect(() => {
+    dispatch(fetchAllTodos());
+  }, [dispatch]);
+
+  // Calculate progress - count items where both maria and leo have completed
   const totalItems = items.length;
   const completedItems = items.filter(
-    (item) => item.completedBy.length === 2
+    (item) => item.status.maria && item.status.leo
   ).length;
   const progressPercentage =
     totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-  const handleAddItem = () => {
-    if (!newItemTitle.trim()) return;
+  // Filter items based on search with blur search
+  const filteredItems = inputValue.trim()
+    ? items
+        .map((item) => ({
+          item,
+          score: blurSearch(inputValue, item.title),
+        }))
+        .filter(({ score }) => score > -1)
+        .sort((a, b) => b.score - a.score)
+        .map(({ item }) => item)
+    : items;
 
-    const newItem: ChecklistItem = {
-      id: Math.max(...items.map((i) => i.id), 0) + 1,
-      title: newItemTitle,
-      completedBy: [],
-      photos: [],
-    };
-
-    setItems([newItem, ...items]);
-    setNewItemTitle("");
-  };
-
-  const handleDeleteItem = (id: number) => {
-    setItems(items.filter((item) => item.id !== id));
-  };
-
-  const toggleItemCompletion = (id: number) => {
-    setItems(
-      items.map((item) => {
-        if (item.id === id) {
-          const isCompleted = item.completedBy.includes(
-            currentUser as "maria" | "leo"
-          );
-          return {
-            ...item,
-            completedBy: isCompleted
-              ? item.completedBy.filter((user) => user !== currentUser)
-              : [...item.completedBy, currentUser as "maria" | "leo"],
-          };
-        }
-        return item;
+  const handleAddItem = async (newItem: Todo) => {
+    dispatch(
+      addNewTodo({
+        title: newItem.title,
+        description: newItem.description,
+        createdBy: newItem.createdBy as "maria" | "leo",
+        images: newItem.images,
       })
     );
   };
 
-  const toggleItemExpanded = (id: number) => {
+  const handleInputKeyPress = () => {
+    // Search input only - do nothing on Enter
+    return;
+  };
+
+  const handleDeleteItem = (todoId: string) => {
+    dispatch(deleteTodoAsync(todoId));
+  };
+
+  const toggleItemCompletion = (todoId: string) => {
+    const item = items.find((t) => t.id === todoId);
+
+    if (item && currentUser) {
+      const isCompleted = item.status[currentUser as "maria" | "leo"];
+      dispatch(
+        updateTodoStatusAsync({
+          todoId,
+          user: currentUser as "maria" | "leo",
+          completed: !isCompleted,
+        })
+      );
+    }
+  };
+
+  const toggleItemExpanded = (todoId: string) => {
     const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id);
+    if (newExpanded.has(todoId)) {
+      newExpanded.delete(todoId);
     } else {
-      newExpanded.add(id);
+      newExpanded.add(todoId);
     }
     setExpandedItems(newExpanded);
   };
 
   return (
-    <div className="h-full w-full  flex flex-col justify-start items-center pt-8 px-8">
+    <div className="h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-8 w-full">
         <h1 className="text-6xl font-elegant text-gray-900 flex-1 leading-tight">
@@ -101,25 +146,30 @@ const ChecklistPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Add New Item */}
+      {/* Search and Add Section */}
       <div className="w-full max-w-2xl mb-8">
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <input
             type="text"
-            placeholder="Add a new adventure or goal..."
-            value={newItemTitle}
-            onChange={(e) => setNewItemTitle(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleAddItem()}
+            placeholder="Search your adventures..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleInputKeyPress}
             className="flex-1 px-6 py-4 rounded-3xl border-2 border-gray-200 focus:border-pink-bright focus:outline-none text-lg placeholder-gray-400 transition-colors"
           />
-          <button
-            onClick={handleAddItem}
-            className="w-14 h-14 rounded-full bg-[#e56d7a] hover:bg-pink-600 text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
-          >
-            <Plus size={24} />
-          </button>
+
+          {/* Add Button Component */}
+          <SearchAddButton onAddClick={() => setIsModalOpen(true)} />
         </div>
       </div>
+
+      {/* Add Todo Modal */}
+      <AddTodoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddItem}
+        createdBy={currentUser || "maria"}
+      />
 
       {/* Checklist Items */}
       <div
@@ -148,131 +198,16 @@ const ChecklistPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          items.map((item) => (
-            <motion.div
+          filteredItems.map((item) => (
+            <TodoItem
               key={item.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              onClick={() => toggleItemExpanded(item.id)}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer"
-            >
-              <motion.div
-                animate={{
-                  height: expandedItems.has(item.id) ? "auto" : "60px",
-                }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="p-4">
-                  <div className="flex items-center gap-4">
-                    {/* Checkbox */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleItemCompletion(item.id);
-                      }}
-                      className="mt-0.5 shrink-0 cursor-pointer"
-                    >
-                      <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                          item.completedBy.includes(
-                            currentUser as "maria" | "leo"
-                          )
-                            ? "bg-pink-bright border-pink-bright"
-                            : "border-gray-300 hover:border-pink-light"
-                        }`}
-                      >
-                        {item.completedBy.includes(
-                          currentUser as "maria" | "leo"
-                        ) && (
-                          <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                        )}
-                      </div>
-                    </button>
-
-                    {/* Title */}
-                    <div className="flex-1 min-w-0">
-                      <h3
-                        className={`text-lg font-semibold truncate ${
-                          item.completedBy.length === 2
-                            ? "text-gray-400 line-through"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {item.title}
-                      </h3>
-                    </div>
-
-                    {/* Delete Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteItem(item.id);
-                      }}
-                      className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-
-                  {/* Expanded Details */}
-                  <AnimatePresence>
-                    {expandedItems.has(item.id) && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="mt-4 pt-4 border-t border-gray-100 space-y-3"
-                      >
-                        {/* User Completion Status */}
-                        <div className="flex gap-6">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">Maria</span>
-                            <div
-                              className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                item.completedBy.includes("maria")
-                                  ? "bg-pink-bright"
-                                  : "bg-gray-200"
-                              }`}
-                            >
-                              {item.completedBy.includes("maria") && (
-                                <span className="text-white text-xs font-bold">
-                                  ✓
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">Leo</span>
-                            <div
-                              className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                item.completedBy.includes("leo")
-                                  ? "bg-blue-500"
-                                  : "bg-gray-200"
-                              }`}
-                            >
-                              {item.completedBy.includes("leo") && (
-                                <span className="text-white text-xs font-bold">
-                                  ✓
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Add Photos Button */}
-                        <button className="px-4 py-2 rounded-2xl border border-gray-300 hover:border-pink-light flex items-center gap-2 text-gray-600 hover:text-pink-bright transition-colors cursor-pointer text-sm">
-                          <span>📷</span>
-                          <span>Add Photos</span>
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            </motion.div>
+              item={item}
+              isExpanded={expandedItems.has(item.id)}
+              onToggleExpand={toggleItemExpanded}
+              onToggleCompletion={toggleItemCompletion}
+              onDelete={handleDeleteItem}
+              currentUser={currentUser}
+            />
           ))
         )}
       </div>
