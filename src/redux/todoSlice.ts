@@ -7,6 +7,8 @@ import {
   updateTodoStatus,
   deleteTodoItem,
   updateTodoDetails,
+  addImagesToTodo,
+  deleteImageFromTodo,
 } from "../apis/checklistApis";
 
 interface TodoState {
@@ -145,6 +147,58 @@ export const updateTodoDetailsAsync = createAsyncThunk(
   }
 );
 
+export const addImagesToTodoAsync = createAsyncThunk(
+  "todos/addImages",
+  async (
+    {
+      todoId,
+      imageUrls,
+    }: {
+      todoId: string;
+      imageUrls: string[];
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      await addImagesToTodo(todoId, imageUrls);
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Failed to add images to todo"
+      );
+    }
+  }
+);
+
+export const deleteImageFromTodoAsync = createAsyncThunk(
+  "todos/deleteImage",
+  async (
+    {
+      todoId,
+      imageUrl,
+    }: {
+      todoId: string;
+      imageUrl: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      await deleteImageFromTodo(todoId, imageUrl);
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete image from todo"
+      );
+    }
+  }
+);
+
 const todoSlice = createSlice({
   name: "todos",
   initialState,
@@ -271,6 +325,38 @@ const todoSlice = createSlice({
         state.todos = action.payload;
       })
       .addCase(updateTodoDetailsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Add images to todo
+    builder
+      .addCase(addImagesToTodoAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addImagesToTodoAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        // Replace todos with database version to ensure sync
+        state.todos = action.payload;
+      })
+      .addCase(addImagesToTodoAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // Delete image from todo
+    builder
+      .addCase(deleteImageFromTodoAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteImageFromTodoAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        // Replace todos with database version to ensure sync
+        state.todos = action.payload;
+      })
+      .addCase(deleteImageFromTodoAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Todo } from "../types/common/Todo";
+import { uploadTodoImages } from "../storage";
 
 interface AddTodoModalProps {
   isOpen: boolean;
@@ -67,13 +68,19 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
     setError("");
 
     try {
+      // Upload images to Firebase Storage and get URLs
+      let imageUrls: string[] = [];
+      if (selectedImages.length > 0) {
+        imageUrls = await uploadTodoImages(selectedImages, createdBy);
+      }
+
       const newTodo: Todo = {
         title: title.trim(),
         description: description.trim(),
-        createdAt: new Date().toISOString().split("T")[0],
+        createdAt: new Date().toISOString(),
         createdBy,
         status: { maria: false, leo: false },
-        images: previewUrls,
+        images: imageUrls,
       };
 
       // Call the onAdd callback which will dispatch Redux action

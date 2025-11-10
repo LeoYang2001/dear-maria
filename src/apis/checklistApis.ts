@@ -210,3 +210,34 @@ export const addImagesToTodo = async (
     throw error;
   }
 };
+
+/**
+ * Delete an image from a todo
+ * @param todoId - The ID of the todo
+ * @param imageUrl - The URL of the image to delete
+ */
+export const deleteImageFromTodo = async (
+  todoId: string,
+  imageUrl: string
+): Promise<void> => {
+  try {
+    const todoRef = doc(db, TODOS_COLLECTION, todoId);
+    const docSnapshot = await getDocs(
+      query(collection(db, TODOS_COLLECTION), where("__name__", "==", todoId))
+    );
+
+    if (!docSnapshot.empty) {
+      const existingImages = docSnapshot.docs[0].data().images || [];
+      const updatedImages = existingImages.filter(
+        (url: string) => url !== imageUrl
+      );
+      await updateDoc(todoRef, {
+        images: updatedImages,
+      });
+      console.log("Image deleted from todo:", todoId, imageUrl);
+    }
+  } catch (error) {
+    console.error("Error deleting image from todo:", error);
+    throw error;
+  }
+};

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Trash2, Loader } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../redux/store";
 import type { Todo } from "../types/common/Todo";
+import ImageAlbum from "./ImageAlbum";
+import AddPhotosModal from "./AddPhotosModal";
+import { addImagesToTodoAsync } from "../redux/todoSlice";
 
 interface TodoItemProps {
   item: Todo & { id: string };
@@ -20,7 +25,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
   currentUser,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isAlbumOpen, setIsAlbumOpen] = useState(false);
+  const [isAddPhotosOpen, setIsAddPhotosOpen] = useState(false);
   // Determine the completion state
   const currentUserCompleted = item.status[currentUser as "maria" | "leo"];
   const otherUserCompleted =
@@ -50,6 +58,16 @@ const TodoItem: React.FC<TodoItemProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Handle add photos
+  const handleAddPhotos = async (imageUrls: string[]) => {
+    await dispatch(
+      addImagesToTodoAsync({
+        todoId: item.id,
+        imageUrls,
+      })
+    ).unwrap();
   };
 
   // Determine UI state
@@ -206,18 +224,47 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 {/* Description */}
                 <p className="text-sm text-gray-600">{item.description}</p>
 
+                {/* Open Album Button */}
+                {item.images && item.images.length > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAlbumOpen(true);
+                    }}
+                    className="w-full px-4 py-3 rounded-2xl border border-pink-light hover:bg-pink-50 flex items-center justify-center gap-2 text-pink-bright hover:text-pink-600 transition-colors cursor-pointer text-sm font-medium"
+                  >
+                    <span>📷</span>
+                    <span>View Album ({item.images.length} photos)</span>
+                  </button>
+                )}
+
                 {/* Created Info */}
                 <div className="text-xs text-gray-400">
                   <p>
-                    Created by {item.createdBy} on {item.createdAt}
+                    Created by {item.createdBy} on{" "}
+                    {new Date(item.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </p>
                 </div>
 
-                {/* Add Photos Button */}
-                <button className="px-4 py-2 rounded-2xl border border-gray-300 hover:border-pink-light flex items-center gap-2 text-gray-600 hover:text-pink-bright transition-colors cursor-pointer text-sm">
-                  <span>📷</span>
-                  <span>Add Photos</span>
-                </button>
+                {/* Add Photos Button - only show if less than 5 images */}
+                {(!item.images || item.images.length < 5) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAddPhotosOpen(true);
+                    }}
+                    className="px-4 py-2 rounded-2xl border border-gray-300 hover:border-pink-light flex items-center gap-2 text-gray-600 hover:text-pink-bright transition-colors cursor-pointer text-sm"
+                  >
+                    <span>📷</span>
+                    <span>Add Photos</span>
+                  </button>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -258,6 +305,27 @@ const TodoItem: React.FC<TodoItemProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Image Album Modal */}
+      {item.images && item.images.length > 0 && (
+        <ImageAlbum
+          images={item.images}
+          isOpen={isAlbumOpen}
+          onClose={() => setIsAlbumOpen(false)}
+          title={item.title}
+          todoId={item.id}
+          onImageDeleted={() => {}}
+        />
+      )}
+
+      {/* Add Photos Modal */}
+      <AddPhotosModal
+        isOpen={isAddPhotosOpen}
+        onClose={() => setIsAddPhotosOpen(false)}
+        onAdd={handleAddPhotos}
+        createdBy={currentUser as "maria" | "leo"}
+        existingImages={item.images || []}
+      />
     </motion.div>
   );
 };
