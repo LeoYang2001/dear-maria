@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { X, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Todo } from "../types/common/Todo";
-import { addAllTodosSequentially } from "../tests/testAddTodo";
 
 interface AddTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (todo: Todo) => Promise<void>;
-  createdBy: string;
+  createdBy: "maria" | "leo";
 }
 
 const AddTodoModal: React.FC<AddTodoModalProps> = ({
@@ -74,9 +73,10 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
         createdAt: new Date().toISOString().split("T")[0],
         createdBy,
         status: { maria: false, leo: false },
-        images: previewUrls, // Store preview URLs for now, Firebase would handle actual uploads
+        images: previewUrls,
       };
 
+      // Call the onAdd callback which will dispatch Redux action
       await onAdd(newTodo);
       setSuccess(true);
 
@@ -84,7 +84,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
       setTimeout(() => {
         resetForm();
         onClose();
-      }, 1500);
+      }, 500);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to add todo. Try again."
@@ -136,7 +136,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
               </div>
 
               {/* Content */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form className="p-6 space-y-4">
                 {/* Success Message */}
                 <AnimatePresence>
                   {success && (
@@ -267,23 +267,26 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
                 </div>
               </form>
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4  px-6">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-3 cursor-pointer rounded-2xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-3 cursor-pointer rounded-2xl bg-linear-to-r  text-white font-medium  bg-pink-400 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Adding..." : "Add Adventure"}
-                </button>
-              </div>
+              {!success && !error && (
+                <div className="flex gap-3 pt-4  px-6">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    disabled={isLoading}
+                    className="flex-1 px-4 py-3 cursor-pointer rounded-2xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    className="flex-1 px-4 py-3 cursor-pointer rounded-2xl bg-linear-to-r  text-white font-medium  bg-pink-400 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? "Adding..." : "Add Adventure"}
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         </>

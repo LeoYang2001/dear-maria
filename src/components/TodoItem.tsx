@@ -1,5 +1,5 @@
-import React from "react";
-import { Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Trash2, Loader } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Todo } from "../types/common/Todo";
 
@@ -7,8 +7,8 @@ interface TodoItemProps {
   item: Todo & { id: string };
   isExpanded: boolean;
   onToggleExpand: (todoId: string) => void;
-  onToggleCompletion: (todoId: string) => void;
-  onDelete: (todoId: string) => void;
+  onToggleCompletion: (todoId: string) => Promise<void>;
+  onDelete: (todoId: string) => Promise<void>;
   currentUser: string | null;
 }
 
@@ -20,6 +20,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
   currentUser,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   // Determine the completion state
   const currentUserCompleted = item.status[currentUser as "maria" | "leo"];
   const otherUserCompleted =
@@ -29,6 +30,26 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const userCompleteStatus = {
     leo: item.status.leo,
     maria: item.status.maria,
+  };
+
+  // Handle toggle completion with loading state
+  const handleToggleCompletion = async () => {
+    setIsLoading(true);
+    try {
+      await onToggleCompletion(item.id);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle delete with loading state
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await onDelete(item.id);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Determine UI state
@@ -86,6 +107,25 @@ const TodoItem: React.FC<TodoItemProps> = ({
       }}
       className="bg-white rounded-2xl border overflow-hidden relative border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer"
     >
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/10 backdrop-blur-sm rounded-2xl flex items-center justify-center z-50"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-6 h-6"
+            >
+              <Loader size={24} className="text-pink-bright" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.div
         animate={{
           height: isExpanded ? "auto" : "60px",
@@ -99,7 +139,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             <div
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleCompletion(item.id);
+                handleToggleCompletion();
               }}
               className="mt-0.5 shrink-0 cursor-pointer relative group"
               title={
@@ -117,7 +157,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
               }
             >
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${getCheckboxStyle()}`}
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${getCheckboxStyle()} ${
+                  isLoading ? "opacity-50" : ""
+                }`}
               >
                 {shouldShowCheckmark() && (
                   <span className="text-white text-xs font-bold">✓</span>
@@ -142,9 +184,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(item.id);
+                handleDelete();
               }}
-              className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+              disabled={isLoading}
+              className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 size={18} />
             </button>

@@ -1,9 +1,8 @@
 import { Footprints, ListChecks, LogOut, Mail, PillBottle } from "lucide-react";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../redux/store";
+import { useDispatch } from "react-redux";
 import { logout } from "../redux/authSlice";
 import HeartBeat from "./HeartBeat";
 
@@ -18,10 +17,20 @@ function Header({
 }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const [currentUser, setCurrentUser] = useState<"maria" | "leo" | null>(null);
+
+  // Get currentUser from localStorage on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem("currentUser") as
+      | "maria"
+      | "leo"
+      | null;
+    setCurrentUser(savedUser);
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem("currentUser");
     navigate("/auth");
   };
 

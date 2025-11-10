@@ -1,4 +1,3 @@
-import { Heart } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -34,6 +33,18 @@ const AuthPage: React.FC = () => {
     }
   }, [hoveredCharacter]);
 
+  // Check if user is already logged in via localStorage
+  useEffect(() => {
+    const savedUser = localStorage.getItem("currentUser") as
+      | "maria"
+      | "leo"
+      | null;
+    if (savedUser) {
+      dispatch(setCurrentUser(savedUser));
+      navigate("/main");
+    }
+  }, [dispatch, navigate]);
+
   const handleMouseEnter = (characterId: "maria" | "leo") => {
     setHoveredCharacter(characterId);
   };
@@ -66,8 +77,9 @@ const AuthPage: React.FC = () => {
     // TODO: Add authentication logic here
     console.log("Auth attempt:", { character: selectedCharacter, password });
 
-    // Set current user in Redux and navigate to main page
+    // Set current user in Redux and localStorage
     dispatch(setCurrentUser(selectedCharacter));
+    localStorage.setItem("currentUser", selectedCharacter);
     navigate("/main");
   };
 

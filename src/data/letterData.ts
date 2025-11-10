@@ -1,0 +1,80 @@
+export const letterMockData = [
+  {
+    id: 1,
+    title: "How We Began",
+    letter: "H",
+    content: "This is the content of letter 1.",
+  },
+  {
+    id: 2,
+    title: "Always in my Heart",
+    letter: "A",
+    content: "This is the content of letter 2.",
+  },
+  {
+    id: 3,
+    title: "Precious Moments",
+    letter: "P",
+    content: "This is the content of letter 3.",
+  },
+  {
+    id: 4,
+    title: "Pure Joy Forever",
+    letter: "P",
+    content: "This is the content of letter 4.",
+  },
+  {
+    id: 5,
+    title: "You're My Everything",
+    letter: "Y",
+    content: "This is the content of letter 5.",
+  },
+  {
+    id: 6,
+    title: "Beautiful Days Ahead",
+    letter: "B",
+    content: "This is the content of letter 6.",
+  },
+  {
+    id: 7,
+    title: "In My Dreams",
+    letter: "I",
+    content: "This is the content of letter 7.",
+  },
+  {
+    id: 8,
+    title: "Radiant Soul",
+    letter: "R",
+    content: "This is the content of letter 8.",
+  },
+  {
+    id: 9,
+    title: "Time Stands Still",
+    letter: "T",
+    content: "This is the content of letter 9.",
+  },
+  {
+    id: 10,
+    title: "Helping You Shine",
+    letter: "H",
+    content: "This is the content of letter 10.",
+  },
+  {
+    id: 11,
+    title: "Days of Joy",
+    letter: "D",
+    content: "This is the content of letter 11.",
+  },
+  {
+    id: 12,
+    title: "Adventurous Heart",
+    letter: "A",
+    content: "This is the content of letter 12.",
+  },
+  {
+    id: 13,
+    title: "Young and Free",
+    letter: "Y",
+    content: "This is the content of letter 13.",
+  },
+];

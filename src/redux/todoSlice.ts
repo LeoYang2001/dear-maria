@@ -55,16 +55,10 @@ export const addNewTodo = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const todoId = await addTodoItem(title, description, createdBy, images);
-      return {
-        id: todoId,
-        title,
-        description,
-        createdAt: new Date().toISOString().split("T")[0],
-        createdBy,
-        status: { maria: false, leo: false },
-        images: images || [],
-      };
+      await addTodoItem(title, description, createdBy, images);
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to add todo"
@@ -89,7 +83,9 @@ export const updateTodoStatusAsync = createAsyncThunk(
   ) => {
     try {
       await updateTodoStatus(todoId, user, completed);
-      return { todoId, user, completed };
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to update todo status"
@@ -101,9 +97,19 @@ export const updateTodoStatusAsync = createAsyncThunk(
 export const deleteTodoAsync = createAsyncThunk(
   "todos/delete",
   async (todoId: string, { rejectWithValue }) => {
+    //before deleting, pop up confirm window to ask user if they are sure
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this todo?"
+    );
+    if (!confirmed) {
+      return rejectWithValue("Delete action was cancelled");
+    }
+
     try {
       await deleteTodoItem(todoId);
-      return todoId;
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to delete todo"
@@ -128,7 +134,9 @@ export const updateTodoDetailsAsync = createAsyncThunk(
   ) => {
     try {
       await updateTodoDetails(todoId, title, description);
-      return { todoId, title, description };
+      // Fetch all todos from database to ensure Redux stays in sync
+      const todos = await getAllTodos();
+      return todos;
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : "Failed to update todo details"
@@ -150,8 +158,41 @@ const todoSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    addTodoLocal: (state, action: PayloadAction<Todo & { id: string }>) => {
-      state.todos.push(action.payload);
+    addTodoLocal: (
+      state,
+      action: PayloadAction<{
+        title: string;
+        description: string;
+        createdBy: "maria" | "leo";
+        images?: string[];
+      }>
+    ) => {
+      const newTodo: Todo & { id: string } = {
+        id: `temp-${Date.now()}`,
+        title: action.payload.title,
+        description: action.payload.description,
+        createdAt: new Date().toISOString(),
+        createdBy: action.payload.createdBy,
+        status: { maria: false, leo: false },
+        images: action.payload.images || [],
+      };
+      state.todos.push(newTodo);
+    },
+    deleteTodoLocal: (state, action: PayloadAction<string>) => {
+      state.todos = state.todos.filter((todo) => todo.title !== action.payload);
+    },
+    toggleTodoLocal: (
+      state,
+      action: PayloadAction<{
+        todoId: string;
+        user: "maria" | "leo";
+        completed: boolean;
+      }>
+    ) => {
+      const todo = state.todos.find((t) => t.id === action.payload.todoId);
+      if (todo) {
+        todo.status[action.payload.user] = action.payload.completed;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -178,7 +219,8 @@ const todoSlice = createSlice({
       })
       .addCase(addNewTodo.fulfilled, (state, action) => {
         state.loading = false;
-        state.todos.push(action.payload);
+        // Replace todos with database version to ensure sync
+        state.todos = action.payload;
       })
       .addCase(addNewTodo.rejected, (state, action) => {
         state.loading = false;
@@ -187,39 +229,59 @@ const todoSlice = createSlice({
 
     // Update todo status
     builder
+      .addCase(updateTodoStatusAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateTodoStatusAsync.fulfilled, (state, action) => {
-        const todo = state.todos.find((t) => t.id === action.payload.todoId);
-        if (todo) {
-          todo.status[action.payload.user] = action.payload.completed;
-        }
+        state.loading = false;
+        // Replace todos with database version to ensure sync
+        state.todos = action.payload;
       })
       .addCase(updateTodoStatusAsync.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       });
 
     // Delete todo
     builder
+      .addCase(deleteTodoAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteTodoAsync.fulfilled, (state, action) => {
-        state.todos = state.todos.filter((t) => t.id !== action.payload);
+        state.loading = false;
+        // Replace todos with database version to ensure sync
+        state.todos = action.payload;
       })
       .addCase(deleteTodoAsync.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       });
 
     // Update todo details
     builder
+      .addCase(updateTodoDetailsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateTodoDetailsAsync.fulfilled, (state, action) => {
-        const todo = state.todos.find((t) => t.id === action.payload.todoId);
-        if (todo) {
-          todo.title = action.payload.title;
-          todo.description = action.payload.description;
-        }
+        state.loading = false;
+        // Fetch all todos from database to ensure sync
+        state.todos = action.payload;
       })
       .addCase(updateTodoDetailsAsync.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       });
   },
 });
 
-export const { setFilter, clearError, addTodoLocal } = todoSlice.actions;
+export const {
+  setFilter,
+  clearError,
+  addTodoLocal,
+  deleteTodoLocal,
+  toggleTodoLocal,
+} = todoSlice.actions;
 export default todoSlice.reducer;

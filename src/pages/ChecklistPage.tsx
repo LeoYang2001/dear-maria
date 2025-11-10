@@ -41,7 +41,16 @@ const ChecklistPage: React.FC = () => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+  const [currentUser, setCurrentUser] = useState<"maria" | "leo" | null>(null);
+
+  // Get currentUser from localStorage on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem("currentUser") as
+      | "maria"
+      | "leo"
+      | null;
+    setCurrentUser(savedUser);
+  }, []);
   const { todos: items } = useSelector((state: RootState) => state.todos);
 
   // Fetch todos on component mount
@@ -85,22 +94,22 @@ const ChecklistPage: React.FC = () => {
     return;
   };
 
-  const handleDeleteItem = (todoId: string) => {
-    dispatch(deleteTodoAsync(todoId));
+  const handleDeleteItem = async (todoId: string) => {
+    await dispatch(deleteTodoAsync(todoId)).unwrap();
   };
 
-  const toggleItemCompletion = (todoId: string) => {
+  const toggleItemCompletion = async (todoId: string) => {
     const item = items.find((t) => t.id === todoId);
 
     if (item && currentUser) {
       const isCompleted = item.status[currentUser as "maria" | "leo"];
-      dispatch(
+      await dispatch(
         updateTodoStatusAsync({
           todoId,
           user: currentUser as "maria" | "leo",
           completed: !isCompleted,
         })
-      );
+      ).unwrap();
     }
   };
 

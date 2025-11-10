@@ -32,7 +32,7 @@ export const addTodoItem = async (
     const todoData: Todo = {
       title,
       description,
-      createdAt: new Date().toISOString().split("T")[0],
+      createdAt: new Date().toISOString(),
       createdBy,
       status: {
         maria: false,
@@ -111,7 +111,7 @@ export const getTodosByCreator = async (
 
 /**
  * Get all todos
- * @returns Promise with array of all todos
+ * @returns Promise with array of all todos sorted by creation date (latest first)
  */
 export const getAllTodos = async (): Promise<(Todo & { id: string })[]> => {
   try {
@@ -130,6 +130,13 @@ export const getAllTodos = async (): Promise<(Todo & { id: string })[]> => {
         images: data.images || [],
       });
     });
+
+    // Sort by createdAt date, latest first
+    todos.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    console.log("todos sorted by createdAt date", todos);
 
     return todos;
   } catch (error) {
