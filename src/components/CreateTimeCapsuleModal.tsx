@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Lock } from "lucide-react";
+import { X, Lock, Upload, Trash2 } from "lucide-react";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
-import type { RootState } from "../redux/store";
-import { useSelector } from "react-redux";
+import { uploadTimeCapsuleImage } from "../storage";
+import { addTimeCapsule } from "../apis/timeCapsuleApis";
 
 interface CreateTimeCapsuleModalProps {
   isOpen: boolean;
@@ -16,17 +19,22 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const currentUser = useSelector(
-    (state: RootState) => state.auth.currentUser
-  ) as "Maria" | "Leo" | null;
+  //get currentUser from local storage
+  const currentUser = localStorage.getItem("currentUser") as
+    | "Maria"
+    | "Leo"
+    | null;
 
   const [formData, setFormData] = useState({
     title: "",
     message: "",
-    unlockDate: "",
+    unlockDate: null as Dayjs | null,
     emailNotification: false,
+    picture: null as File | null,
+    notificationEmail: "",
   });
   const [formError, setFormError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -39,7 +47,14 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const removeImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      picture: null,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -58,33 +73,65 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
     }
 
     // Check if unlock date is in the future
-    const unlockDateObj = new Date(formData.unlockDate);
+    const unlockDateObj = formData.unlockDate.toDate();
     if (unlockDateObj <= new Date()) {
       setFormError("Unlock date must be in the future");
       return;
     }
 
     // Create new capsule
-    const newCapsule: TimeCapsule = {
-      id: Date.now().toString(),
-      title: formData.title,
-      message: formData.message,
-      unlockDate: formData.unlockDate,
-      createdDate: new Date().toISOString(),
-      emailNotification: formData.emailNotification,
-      createdBy: currentUser || "Maria",
-    };
+    try {
+      setIsLoading(true);
 
-    onSubmit(newCapsule);
+      // Upload image only if provided (optional)
+      let downloadImgUrl: string | undefined = undefined;
+      if (formData.picture) {
+        downloadImgUrl = await uploadTimeCapsuleImage(
+          formData.picture,
+          currentUser
+        );
+      }
 
-    // Reset form
-    setFormData({
-      title: "",
-      message: "",
-      unlockDate: "",
-      emailNotification: false,
-    });
-    setFormError("");
+      let newCapsule: TimeCapsule;
+      if (currentUser) {
+        newCapsule = {
+          id: Date.now().toString(),
+          title: formData.title,
+          message: formData.message,
+          unlockDate: formData.unlockDate.toISOString(),
+          createdDate: new Date().toISOString(),
+          createdBy: currentUser,
+          emailAddress: formData.notificationEmail,
+          picture: downloadImgUrl,
+        };
+      } else {
+        setIsLoading(false);
+        setFormError("User not found, try to log in again!");
+        return;
+      }
+
+      await addTimeCapsule(newCapsule);
+
+      console.log("newCapsule:,", newCapsule);
+
+      onSubmit(newCapsule);
+
+      // Reset form
+      setFormData({
+        title: "",
+        message: "",
+        unlockDate: null,
+        emailNotification: false,
+        picture: null,
+        notificationEmail: "",
+      });
+      onClose();
+      setFormError("");
+      setIsLoading(false);
+    } catch (error) {
+      setFormError("Failed to create time capsule. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -92,8 +139,10 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
     setFormData({
       title: "",
       message: "",
-      unlockDate: "",
+      unlockDate: null,
       emailNotification: false,
+      picture: null,
+      notificationEmail: "",
     });
     setFormError("");
     onClose();
@@ -108,8 +157,7 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            onClick={handleClose}
-            className="fixed inset-0 bg-black z-40"
+            className="fixed inset-0 bg-black  z-40"
           />
 
           {/* Modal */}
@@ -117,12 +165,13 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={handleClose}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex  items-center justify-center p-4"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl shadow-2xl  w-[30vw] h-[76vh] flex flex-col justify-start overflow-y-auto"
             >
               {/* Modal Header */}
               <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center rounded-t-3xl">
@@ -131,8 +180,8 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
                     Create a Time Capsule
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
-                    Write a letter to your future selves. Once scheduled, it
-                    cannot be canceled—a symbol of trust.
+                    Write a letter to your partner in the future. Once
+                    scheduled, it cannot be canceled!
                   </p>
                 </div>
                 <button
@@ -144,7 +193,7 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
               </div>
 
               {/* Modal Content */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form className="p-6 space-y-4">
                 {/* Error Message */}
                 {formError && (
                   <motion.div
@@ -183,9 +232,73 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
                     value={formData.message}
                     onChange={handleInputChange}
                     placeholder="Write your letter here..."
-                    rows={5}
+                    rows={9}
                     className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:border-pink-bright focus:outline-none focus:ring-1 focus:ring-pink-bright transition-colors resize-none"
                   />
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Attach Photo (Optional)
+                  </label>
+
+                  {/* Image Preview */}
+                  {formData.picture && (
+                    <div
+                      style={{
+                        height: "7rem",
+                      }}
+                      className="mb-3  border border-gray-200 relative rounded-lg overflow-hidden"
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative group"
+                      >
+                        <img
+                          src={URL.createObjectURL(formData.picture)}
+                          alt="preview"
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div
+                          onClick={() => removeImage()}
+                          className="absolute inset-0 cursor-pointer bg-black bg-opacity-0 hover:bg-opacity-10 flex items-center justify-center opacity-0 group-hover:opacity-80 transition-all duration-300 rounded-lg"
+                        >
+                          <Trash2 size={24} className="text-white" />
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+
+                  {/* Upload Input */}
+                  {!formData.picture && (
+                    <label
+                      style={{
+                        height: "7rem",
+                      }}
+                      className="flex  flex-col items-center justify-center border-2 border-dashed border-pink-300  rounded-2xl p-4 cursor-pointer hover:border-pink-500  hover:bg-pink-200 transition-all  duration-200 bg-pink-50"
+                    >
+                      <Upload size={24} className="text-pink-500 mb-2" />
+                      <span className="text-md font-medium text-pink-600 text-center">
+                        Click to add a photo
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const files = e.target.files;
+                          if (files && files.length > 0) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              picture: files[0],
+                            }));
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </div>
 
                 {/* Unlock Date Field */}
@@ -193,60 +306,133 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Unlock Date
                   </label>
-                  <input
-                    type="date"
-                    name="unlockDate"
-                    value={formData.unlockDate}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:border-pink-bright focus:outline-none focus:ring-1 focus:ring-pink-bright transition-colors"
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      value={formData.unlockDate}
+                      onChange={(newValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          unlockDate: newValue,
+                        }));
+                      }}
+                      minDate={dayjs().add(1, "day")}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          className: "w-full",
+                          sx: {
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "1rem",
+                              fontSize: "0.95rem",
+                              "& fieldset": {
+                                borderColor: "#d1d5db",
+                              },
+                              "&:hover fieldset": {
+                                borderColor: "#9ca3af",
+                              },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#ec4899",
+                              },
+                            },
+                            "& .MuiOutlinedInput-input": {
+                              padding: "12px 16px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
                 </div>
 
                 {/* Warning Message */}
-                <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-3 flex gap-2">
-                  <span className="text-yellow-600 text-lg">⚠️</span>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-2 items-center flex gap-2">
+                  <span className="text-yellow-600 text-sm">⚠️</span>
                   <p className="text-yellow-700 text-sm">
-                    Once created, this capsule cannot be edited or deleted until
-                    the unlock date
+                    this capsule cannot be edited or deleted until the unlock
+                    date
                   </p>
                 </div>
 
-                {/* Email Notification Checkbox */}
-                <div className="flex items-center gap-3 pt-2">
-                  <input
-                    type="checkbox"
-                    id="emailNotification"
-                    name="emailNotification"
-                    checked={formData.emailNotification}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 rounded border-gray-300 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="emailNotification"
-                    className="text-sm text-gray-600 cursor-pointer"
-                  >
-                    Send email notification on unlock day
-                  </label>
-                </div>
+                {/* Email Notification Checkbox - COMMENTED OUT FOR NOW */}
+                {/* <div className="flex flex-col gap-3 pt-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="emailNotification"
+                      name="emailNotification"
+                      checked={formData.emailNotification}
+                      onChange={handleInputChange}
+                      className="w-4 h-4 rounded border-gray-300 cursor-pointer"
+                    />
+                    <label
+                      htmlFor="emailNotification"
+                      className="text-sm text-gray-600 cursor-pointer"
+                    >
+                      Send email notification on unlock day
+                    </label>
+                  </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-6 border-t border-gray-100">
+                  {/* Email Input - shown when checkbox is checked */}
+                {/* {formData.emailNotification && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="ml-7"
+                    >
+                      <input
+                        type="email"
+                        name="notificationEmail"
+                        value={formData.notificationEmail}
+                        onChange={handleInputChange}
+                        placeholder="Enter email address"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-pink-bright focus:outline-none focus:ring-1 focus:ring-pink-bright transition-colors text-sm"
+                      />
+                    </motion.div>
+                  )} */}
+                {/* </div> */}
+              </form>
+              {/* Action Buttons */}
+              <div className="flex mt-auto flex-1  flex-col justify-end  pb-8">
+                <div className=" flex flex-row  px-12 justify-between gap-10">
                   <button
+                    style={{ height: 60 }}
                     type="button"
                     onClick={handleClose}
-                    className="flex-1 px-4 py-3 rounded-2xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                    disabled={isLoading}
+                    className="flex-1 px-4 py-3 rounded-2xl border border-gray-200 cursor-pointer text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="flex-1 px-4 py-3 rounded-2xl bg-pink-bright hover:bg-pink-500 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    className="flex-1 px-4 py-3 rounded-2xl bg-pink-400 cursor-pointer hover:bg-pink-500 text-white font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    <Lock size={18} />
-                    <span>Seal & Schedule</span>
+                    {isLoading ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                          className="flex items-center justify-center"
+                        >
+                          <Lock size={18} />
+                        </motion.div>
+                        <span>Sealing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={18} />
+                        <span>Seal & Schedule</span>
+                      </>
+                    )}
                   </button>
                 </div>
-              </form>
+              </div>
             </div>
           </motion.div>
         </>

@@ -19,6 +19,7 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
   isUnlocked,
 }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const createdDate = new Date(capsule.createdDate);
   const unlockDate = new Date(capsule.unlockDate);
   const now = new Date();
@@ -35,7 +36,6 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
             className="fixed inset-0 bg-black z-40"
           />
 
@@ -45,32 +45,26 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onClick={onClose}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-white rounded-3xl shadow-2xl w-[45vw] max-h-[80vh] overflow-hidden flex flex-col"
             >
-              {/* Modal Header - Journal Style */}
-              <div className="sticky top-0 bg-linear-to-r from-pink-50 to-purple-50 border-b border-gray-200 px-8 py-6 flex justify-between items-start">
+              {/* Modal Header - Minimal Style */}
+              <div className="sticky top-0 bg-white border-b border-gray-100 px-8 py-6 flex justify-between items-center">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="inline-block px-3 py-1 bg-white border border-pink-300 rounded-full">
-                      <span className="text-xs font-semibold text-pink-600">
-                        {isReceived ? "📬 Received" : "📤 Sent"}
-                      </span>
-                    </div>
-                  </div>
-                  <h2 className="text-4xl font-elegant font-bold text-gray-900 mb-4">
+                  <h2 className="text-3xl font-elegant font-bold text-gray-900">
                     {capsule.title}
                   </h2>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
                     <div className="flex items-center gap-1">
-                      <User size={16} />
-                      <span className="font-medium">{capsule.createdBy}</span>
+                      <User size={14} />
+                      <span>{capsule.createdBy}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar size={16} />
+                      <Calendar size={14} />
                       <span>
                         {createdDate.toLocaleDateString("en-US", {
                           month: "short",
@@ -83,32 +77,31 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
                 >
-                  <X size={24} className="text-gray-500" />
+                  <X size={24} className="text-gray-400" />
                 </button>
               </div>
 
-              {/* Modal Content - Journal Page Style */}
-              <div className="overflow-y-auto flex-1 px-8 py-8">
+              {/* Modal Content */}
+              <div className="overflow-y-auto flex-1 px-8 py-6 space-y-6">
                 {/* Status Banner for Locked Capsules */}
                 {isReceived && !isUnlocked && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mb-6"
+                    className="bg-blue-50 border border-blue-200 rounded-2xl p-4"
                   >
-                    <p className="text-blue-900 font-medium">
-                      ⏰ This capsule unlocks in{" "}
+                    <p className="text-blue-900 font-medium text-sm">
+                      ⏰ Unlocks in{" "}
                       <span className="font-bold text-blue-700">
                         {daysRemaining} days
                       </span>{" "}
                       on{" "}
                       <span className="font-semibold">
                         {unlockDate.toLocaleDateString("en-US", {
-                          month: "long",
+                          month: "short",
                           day: "numeric",
-                          year: "numeric",
                         })}
                       </span>
                     </p>
@@ -120,93 +113,139 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-green-50 border-l-4 border-green-400 rounded-lg p-4 mb-6"
+                    className="bg-green-50 border border-green-200 rounded-2xl p-4"
                   >
-                    <p className="text-green-900 font-medium">
-                      ✨ This capsule is now unlocked! Sent by{" "}
-                      {capsule.createdBy} on{" "}
+                    <p className="text-green-900 font-medium text-sm">
+                      ✨ Unlocked! Sent on{" "}
                       {createdDate.toLocaleDateString("en-US", {
                         month: "long",
                         day: "numeric",
-                        year: "numeric",
                       })}
                     </p>
                   </motion.div>
                 )}
 
+                {/* Image Display - if available */}
+                {capsule.picture && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                  >
+                    <img
+                      src={capsule.picture}
+                      alt={capsule.title}
+                      className="w-full h-auto max-h-64 object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </motion.div>
+                )}
+
                 {/* Message Content - Journal Style */}
-                <div className="bg-linear-to-br from-white to-gray-50 border border-gray-200 rounded-2xl p-8 mb-6 min-h-[300px] shadow-sm">
-                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap font-serif text-lg">
+                <div className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 min-h-[200px] shadow-sm">
+                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base break-all">
                     {capsule.message}
                   </p>
                 </div>
 
-                {/* Metadata Footer */}
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 border-t border-gray-200 pt-6">
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase mb-1">
-                      Sent On
-                    </p>
-                    <p className="font-medium">
-                      {createdDate.toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
+                {/* Metadata Section */}
+                <div className="border-t border-gray-100 pt-6 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-500 text-xs font-semibold uppercase mb-2">
+                        Unlocks
+                      </p>
+                      <p className="text-gray-600 font-medium text-sm">
+                        {unlockDate.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase mb-1">
-                      Unlocks On
-                    </p>
-                    <p className="font-medium">
-                      {unlockDate.toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
+
+                  {/* Email Notification Info */}
+                  {capsule.emailAddress && (
+                    <div className="flex items-center gap-2 text-sm text-purple-600 bg-purple-50 px-4 py-3 rounded-xl border border-purple-100">
+                      <Mail size={16} className="shrink-0" />
+                      <span>Email notification set</span>
+                    </div>
+                  )}
                 </div>
-
-                {/* Email Notification Info */}
-                {capsule.emailNotification && (
-                  <div className="mt-6 flex items-center gap-2 text-sm text-purple-600 bg-purple-50 px-4 py-3 rounded-lg">
-                    <Mail size={16} />
-                    <span>Email notification enabled for unlock date</span>
-                  </div>
-                )}
               </div>
 
-              {/* Modal Footer - Actions */}
-              <div className="border-t border-gray-200 bg-gray-50 px-8 py-4 flex items-center justify-between">
-                <button
-                  onClick={() => setIsLiked(!isLiked)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                    isLiked
-                      ? "bg-pink-100 text-pink-600"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <Heart
-                    size={20}
-                    fill={isLiked ? "currentColor" : "none"}
-                    stroke={isLiked ? "currentColor" : "currentColor"}
-                  />
-                  <span>{isLiked ? "Liked" : "Like"}</span>
-                </button>
-
-                <button
-                  onClick={onClose}
-                  className="px-6 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
+              {/* Footer Action */}
+              {isReceived && isUnlocked && (
+                <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
+                  <button
+                    onClick={() => setIsLiked(!isLiked)}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-pink-500 transition-colors"
+                  >
+                    <Heart
+                      size={18}
+                      className={isLiked ? "fill-pink-500 text-pink-500" : ""}
+                    />
+                    <span>{isLiked ? "Liked" : "Like this message"}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
+
+          {/* Full Screen Image Modal */}
+          <AnimatePresence>
+            {isImageModalOpen && capsule.picture && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsImageModalOpen(false)}
+                  className="fixed inset-0 bg-black z-50"
+                />
+
+                {/* Image Modal */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                  onClick={() => setIsImageModalOpen(false)}
+                >
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="relative flex flex-col items-center max-w-4xl max-h-[90vh]"
+                  >
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setIsImageModalOpen(false)}
+                      className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-100 transition-colors z-10 shadow-lg"
+                    >
+                      <X size={24} className="text-gray-600" />
+                    </button>
+
+                    {/* Full Image */}
+                    <img
+                      src={capsule.picture}
+                      alt={capsule.title}
+                      className="w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                    />
+
+                    {/* Image Info */}
+                    <div className="mt-4 text-center text-white">
+                      <p className="text-sm font-medium">{capsule.title}</p>
+                      <p className="text-xs text-gray-300 mt-1">
+                        Click anywhere to close
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>

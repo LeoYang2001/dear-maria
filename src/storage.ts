@@ -1,4 +1,3 @@
-// src/firebase/storage.ts
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "./firebase";
 
@@ -20,4 +19,17 @@ export const uploadTodoImages = async (
   }
 
   return urls;
+};
+
+export const uploadTimeCapsuleImage = async (
+  file: File,
+  user: "Maria" | "Leo" | null
+) => {
+  const filePath = `timeCapsule/${user}/${Date.now()}-${file.name}`;
+  const storageRef = ref(storage, filePath);
+
+  await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(storageRef);
+
+  return downloadURL;
 };

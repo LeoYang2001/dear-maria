@@ -69,8 +69,8 @@ function Header({
       }}
       className=" shadow-sm"
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className="  mx-auto px-6  lg:px-8">
+        <div className="flex justify-start items-center h-20">
           {/* Logo */}
           <div className="flex items-center space-x-2 shrink-0">
             <HeartBeat size={28} />
@@ -80,7 +80,7 @@ function Header({
           </div>
 
           {/* Navigation Tabs - Desktop */}
-          <div className=" md:flex items-center space-x-">
+          <div className="   ml-auto mr-20 flex flex-row gap-2  items-center space-x-">
             {tabs.map((tab) => (
               <button
                 key={tab.id}

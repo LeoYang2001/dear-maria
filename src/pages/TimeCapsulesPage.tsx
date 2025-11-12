@@ -1,27 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Lock } from "lucide-react";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
 import TimeCapsuleCard from "../components/TimeCapsuleCard";
 import CreateTimeCapsuleModal from "../components/CreateTimeCapsuleModal";
 import { mockTimeCapsules } from "../data/mockTimeCapsules";
+import { getAllTimeCapsules } from "../apis/timeCapsuleApis";
 import "../styles/tabs.css";
 
 const TimeCapsulesPage: React.FC = () => {
   const currentUser = localStorage.getItem("currentUser");
-  const currentUserCapitalized = currentUser
-    ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1)
-    : null;
+  const currentUserLowercase = currentUser?.toLowerCase() ?? null;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [capsules, setCapsules] = useState<TimeCapsule[]>(mockTimeCapsules);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"received" | "sent">("sent");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch time capsules from backend on mount
+  useEffect(() => {
+    const fetchTimeCapsules = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getAllTimeCapsules();
+        setCapsules(data);
+      } catch (err) {
+        console.error("Failed to fetch time capsules:", err);
+        setError("Failed to load time capsules. Using mock data instead.");
+        // Keep mock data as fallback
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTimeCapsules();
+  }, []);
 
   const itemsPerPage = 8; // 4 cols * 2 rows
 
   // Filter capsules based on tab
   const filteredCapsules = capsules.filter((capsule) => {
-    const isReceived = capsule.createdBy !== currentUserCapitalized;
+    const isReceived = capsule.createdBy.toLowerCase() !== currentUserLowercase;
     return activeTab === "received" ? isReceived : !isReceived;
   });
 
@@ -31,10 +52,10 @@ const TimeCapsulesPage: React.FC = () => {
   const currentCapsules = filteredCapsules.slice(startIndex, endIndex);
 
   const receivedCount = capsules.filter(
-    (c) => c.createdBy !== currentUserCapitalized
+    (c) => c.createdBy.toLowerCase() !== currentUserLowercase
   ).length;
   const sentCount = capsules.filter(
-    (c) => c.createdBy === currentUserCapitalized
+    (c) => c.createdBy.toLowerCase() === currentUserLowercase
   ).length;
 
   const handleCreateCapsule = (newCapsule: TimeCapsule) => {
@@ -55,6 +76,25 @@ const TimeCapsulesPage: React.FC = () => {
         </p>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="w-full max-w-2xl mb-6 px-6 py-4 bg-red-50 border border-red-200 rounded-2xl">
+          <p className="text-red-700 font-medium">{error}</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center pt-40 flex-1">
+          <div className="animate-spin">
+            <Lock size={48} className="text-gray-400" />
+          </div>
+          <p className="text-xl text-gray-400 mt-4">
+            Loading your time capsules...
+          </p>
+        </div>
+      )}
+
       {/* Create New Time Capsule Button */}
       <button
         onClick={() => setIsModalOpen(true)}
@@ -65,7 +105,7 @@ const TimeCapsulesPage: React.FC = () => {
       </button>
 
       {/* Tabs - CSS Slider Style */}
-      {capsules.length > 0 && (
+      {!isLoading && capsules.length > 0 && (
         <div className="tabs-container">
           <div className="tabs-wrapper">
             {/* Slider Background */}
@@ -88,7 +128,7 @@ const TimeCapsulesPage: React.FC = () => {
               className="tabs-button"
             >
               <span className={activeTab === "received" ? "active" : ""}>
-                📬 Received ({receivedCount})
+                Received ({receivedCount})
               </span>
             </button>
 
@@ -101,7 +141,7 @@ const TimeCapsulesPage: React.FC = () => {
               className="tabs-button"
             >
               <span className={activeTab === "sent" ? "active" : ""}>
-                ▶ Sent ({sentCount})
+                Sent ({sentCount})
               </span>
             </button>
           </div>
@@ -109,7 +149,7 @@ const TimeCapsulesPage: React.FC = () => {
       )}
 
       {/* Empty State */}
-      {currentCapsules.length === 0 && (
+      {!isLoading && currentCapsules.length === 0 && (
         <div className="flex flex-col  items-center  pt-40 flex-1 w-full opacity-0 animate-fade-in">
           <Lock size={64} className="text-gray-300 mb-6" />
           <p className="text-2xl text-gray-500 font-medium">
@@ -121,7 +161,7 @@ const TimeCapsulesPage: React.FC = () => {
       )}
 
       {/* Time Capsules Grid */}
-      {currentCapsules.length > 0 && (
+      {!isLoading && currentCapsules.length > 0 && (
         <div className="w-full h-[60vh] flex flex-col relative  items-center">
           {/* Grid */}
           <div className="w-full grid grid-cols-4 gap-12   px-20 mb-8">

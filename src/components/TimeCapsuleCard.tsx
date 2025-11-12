@@ -21,125 +21,92 @@ const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({ capsule }) => {
   const createdDate = new Date(capsule.createdDate);
 
   // Determine if this is a received or sent capsule
-  const currentUserCapitalized = currentUser
-    ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1)
-    : null;
-  const isReceived = capsule.createdBy !== currentUserCapitalized;
+  const currentUserLowercase = currentUser?.toLowerCase() ?? null;
+  console.log("currentUserLowercase:", currentUserLowercase);
+  const createdByLowercase = capsule.createdBy.toLowerCase();
+  console.log("created by:", createdByLowercase);
+  const isReceived = createdByLowercase !== currentUserLowercase;
   const isUnlocked = now >= unlockDate;
   const canRead = !isReceived || isUnlocked;
 
   return (
     <>
-      <div className={`capsule-card ${isReceived ? "received" : "sent"}`}>
+      <div
+        className={` bg-white border p-6  relative rounded-2xl border-gray-200 shadow-sm hover:border-[#e68d98]  transition-all duration-300 flex flex-col justify-between`}
+      >
+        {/* this is a blurry mask to cover the content when locked */}
+        {isReceived && !isUnlocked && (
+          <div
+            style={{
+              backdropFilter: "blur(3px)",
+            }}
+            className="absolute w-full h-full z-30 left-0 top-0  bg-white/30 rounded-2xl flex flex-col items-center justify-center"
+          >
+            <Lock size={40} className="text-gray-400 mb-2" />
+            <p className="text-lg font-bold text-gray-600">
+              {daysRemaining} days
+            </p>
+            <p className="text-xs text-gray-500">remaining</p>
+          </div>
+        )}
         {/* Header with icon and type badge */}
         <div className="card-header">
-          <div className="card-icon">
+          <div
+            style={{
+              backgroundColor: "#fdf1f3",
+            }}
+            className=" p-2 rounded-xl"
+          >
             {isReceived ? (
               <Mail size={24} className="text-pink-500" />
             ) : (
-              <Mail size={24} className="text-blue-500" />
+              <Mail size={24} className="text-pink-500" />
             )}
-          </div>
-          <div className="card-type-badge">
-            {isReceived ? "📬 Received" : "📤 Sent"}
           </div>
         </div>
 
-        {/* For locked received capsules: show only lock overlay */}
-        {isReceived && !isUnlocked ? (
-          <>
-            {/* Blurred content area */}
-            <div className="card-content blurred">
-              <h3 className="card-title">{capsule.title}</h3>
-              <div className="card-dates">
-                <div className="date-row">
-                  <span className="date-label">Sent:</span>
-                  <span className="date-value">
-                    {capsule.createdBy} on{" "}
-                    {createdDate.toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="date-row">
-                  <span className="date-label">Unlocks:</span>
-                  <span className="date-value">
-                    {unlockDate.toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
+        <>
+          {/* Content area - readable for sent and unlocked received */}
+          <div className="card-content">
+            <h3 className="card-title">{capsule.title}</h3>
+
+            <div className="card-dates">
+              <div className="date-row">
+                <span className="date-label">Sent BY:</span>
+                <span className="date-value">
+                  {capsule.createdBy} on{" "}
+                  {createdDate.toLocaleDateString("en-US", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
-              <p className="card-message">{capsule.message}</p>
-            </div>
-
-            {/* Locked overlay */}
-            <div className="card-locked-overlay">
-              <Lock size={40} className="text-gray-500" />
-              <p className="locked-text">{daysRemaining} days remaining</p>
-            </div>
-
-            {/* Footer - no action button for locked */}
-            <div className="card-footer">
-              <div className="text-center text-sm text-gray-500 py-2 flex-1">
-                Unlocks{" "}
-                {unlockDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })}
+              <div className="date-row">
+                <span className="date-label">Unlocks:</span>
+                <span className="date-value">
+                  {unlockDate.toLocaleDateString("en-US", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
             </div>
-          </>
-        ) : (
-          <>
-            {/* Content area - readable for sent and unlocked received */}
-            <div className="card-content">
-              <h3 className="card-title">{capsule.title}</h3>
 
-              <div className="card-dates">
-                <div className="date-row">
-                  <span className="date-label">Sent:</span>
-                  <span className="date-value">
-                    {isReceived ? capsule.createdBy : "You"} on{" "}
-                    {createdDate.toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                {isReceived && isUnlocked && (
-                  <div className="date-row">
-                    <span className="date-label">Created:</span>
-                    <span className="date-value">
-                      {createdDate.toLocaleDateString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                )}
-              </div>
+            <p className="card-message">{capsule.message}</p>
+          </div>
 
-              <p className="card-message">{capsule.message}</p>
-            </div>
-
-            {/* Footer - with read button */}
-            <div className="card-footer">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="read-button"
-              >
-                📖 Read Letter
-              </button>
-            </div>
-          </>
-        )}
+          {/* Footer - with read button */}
+          <div className="card-footer">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="read-button"
+            >
+              Read
+            </button>
+          </div>
+        </>
       </div>
 
       {/* Detail Modal */}
