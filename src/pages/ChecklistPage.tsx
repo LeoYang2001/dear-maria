@@ -123,6 +123,14 @@ const ChecklistPage: React.FC = () => {
     setExpandedItems(newExpanded);
   };
 
+  const setItemExpanded = (todoId: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (!newExpanded.has(todoId)) {
+      newExpanded.add(todoId);
+    }
+    setExpandedItems(newExpanded);
+  };
+
   return (
     <div className="h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
@@ -213,6 +221,7 @@ const ChecklistPage: React.FC = () => {
               item={item}
               isExpanded={expandedItems.has(item.id)}
               onToggleExpand={toggleItemExpanded}
+              setItemExpanded={setItemExpanded}
               onToggleCompletion={toggleItemCompletion}
               onDelete={handleDeleteItem}
               currentUser={currentUser}

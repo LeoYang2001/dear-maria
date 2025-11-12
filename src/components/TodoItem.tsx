@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Trash2, Loader } from "lucide-react";
+import { Trash2, Loader, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../redux/store";
@@ -15,6 +15,7 @@ interface TodoItemProps {
   onToggleCompletion: (todoId: string) => Promise<void>;
   onDelete: (todoId: string) => Promise<void>;
   currentUser: string | null;
+  setItemExpanded: (todoId: string) => void;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
@@ -24,6 +25,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onToggleCompletion,
   onDelete,
   currentUser,
+  setItemExpanded,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +45,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   // Handle toggle completion with loading state
   const handleToggleCompletion = async () => {
     setIsLoading(true);
+    setItemExpanded(item.id);
     try {
       await onToggleCompletion(item.id);
     } finally {
@@ -86,13 +89,13 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const getCheckboxStyle = () => {
     switch (checkboxState) {
       case "both-completed":
-        return "bg-green-500 border-green-500 shadow-lg";
+        return "bg-pink-400 border-pink-400 shadow-lg border-2";
       case "current-only":
-        return "bg-gray-300 border-gray-400";
+        return "bg-green-500 border-green-500 shadow-lg border-2";
       case "other-only":
-        return "border-gray-300 bg-gray-100";
+        return "border-2 border-gray-300 bg-white";
       default:
-        return "border-gray-300 hover:border-pink-light";
+        return "border-2 border-gray-300 bg-white hover:border-pink-light";
     }
   };
 
@@ -123,7 +126,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
       onClick={() => {
         onToggleExpand(item.id);
       }}
-      className="bg-white rounded-2xl border overflow-hidden relative border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer"
+      className={`rounded-2xl border overflow-hidden relative border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer ${
+        bothCompleted ? "bg-pink-50 border-pink-200" : "bg-white"
+      }`}
     >
       {/* Loading Overlay */}
       <AnimatePresence>
@@ -159,7 +164,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 e.stopPropagation();
                 handleToggleCompletion();
               }}
-              className="mt-0.5 shrink-0 cursor-pointer relative group"
+              className="mt-0.5 shrink-0 cursor-grab relative group"
               title={
                 checkboxState === "both-completed"
                   ? "✓ Both completed"
@@ -175,7 +180,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
               }
             >
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${getCheckboxStyle()} ${
+                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${getCheckboxStyle()} ${
                   isLoading ? "opacity-50" : ""
                 }`}
               >
@@ -219,10 +224,27 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="mt-4 pt-4 border-t border-gray-100 space-y-3"
+                className="mt-4 pt-4 border-t border-gray-100 relative space-y-3"
               >
+                <div className=" absolute bottom-0 right-0 flex flex-row gap-2">
+                  {Object.keys(userCompleteStatus).map((user) => {
+                    if (userCompleteStatus[user as "leo" | "maria"]) {
+                      return (
+                        <div>
+                          <p
+                            style={{ color: "#e67582" }}
+                            className="text-sm text-gray-600 flex flex-row items-center gap-1"
+                          >
+                            {user === "maria" ? "Maria" : "Leo"}{" "}
+                            <Check size={18} color="#e67582" />
+                          </p>
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
                 {/* Description */}
-                <p className="text-sm text-gray-600">{item.description}</p>
+                <p className="text-md text-gray-600">{item.description}</p>
 
                 {/* Open Album Button */}
                 {item.images && item.images.length > 0 && (
@@ -270,41 +292,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
           </AnimatePresence>
         </div>
       </motion.div>
-
-      {/* A progress bar shows the user's completion status. */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute flex flex-row bottom-0 w-full h-2"
-          >
-            {/* Create a mask expand from 0 to 100%  */}
-
-            {Object.keys(userCompleteStatus).map((user) => {
-              if (userCompleteStatus[user as "leo" | "maria"]) {
-                return (
-                  <motion.div
-                    key={user}
-                    initial={{ width: 0 }}
-                    animate={{ width: "50%" }}
-                    transition={{
-                      duration: 0.4,
-                      delay: user === "maria" ? 0 : 0.15,
-                    }}
-                    style={{
-                      height: "100%",
-                      backgroundColor: user === "maria" ? "#fbb6ce" : "#2aad4d",
-                    }}
-                  />
-                );
-              }
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Image Album Modal */}
       {item.images && item.images.length > 0 && (
