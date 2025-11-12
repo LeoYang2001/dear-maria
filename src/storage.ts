@@ -33,3 +33,13 @@ export const uploadTimeCapsuleImage = async (
 
   return downloadURL;
 };
+
+export const uploadPinImage = async (file: File) => {
+  const filePath = `footprint/${Date.now()}-${file.name}`;
+  const storageRef = ref(storage, filePath);
+
+  await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(storageRef);
+
+  return downloadURL;
+};

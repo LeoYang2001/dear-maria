@@ -22,9 +22,7 @@ const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({ capsule }) => {
 
   // Determine if this is a received or sent capsule
   const currentUserLowercase = currentUser?.toLowerCase() ?? null;
-  console.log("currentUserLowercase:", currentUserLowercase);
   const createdByLowercase = capsule.createdBy.toLowerCase();
-  console.log("created by:", createdByLowercase);
   const isReceived = createdByLowercase !== currentUserLowercase;
   const isUnlocked = now >= unlockDate;
   const canRead = !isReceived || isUnlocked;

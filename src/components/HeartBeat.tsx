@@ -1,5 +1,4 @@
 import { Heart } from "lucide-react";
-import React from "react";
 
 function HeartBeat({ size = 58 }: { size?: number }) {
   return (
