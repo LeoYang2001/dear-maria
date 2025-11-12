@@ -7,6 +7,7 @@ import bowingRabbitBoy from "../assets/bowing-rabbit-boy.gif";
 import bowingRabbitBoyPng from "../assets/bowing-rabbit-boy.png";
 import HeartBeat from "../components/HeartBeat";
 import { setCurrentUser } from "../redux/authSlice";
+import { validateCredentials } from "../config/credentials";
 
 const AuthPage: React.FC = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<
@@ -16,6 +17,7 @@ const AuthPage: React.FC = () => {
   const [hoveredCharacter, setHoveredCharacter] = useState<
     "maria" | "leo" | null
   >(null);
+  const [authError, setAuthError] = useState<string>("");
   const mariaImageRef = useRef<HTMLImageElement>(null);
   const leoImageRef = useRef<HTMLImageElement>(null);
   const navigate = useNavigate();
@@ -74,8 +76,14 @@ const AuthPage: React.FC = () => {
     e.preventDefault();
     if (!selectedCharacter) return;
 
-    // TODO: Add authentication logic here
-    console.log("Auth attempt:", { character: selectedCharacter, password });
+    // Validate credentials
+    if (!validateCredentials(selectedCharacter, password)) {
+      setAuthError("Invalid password. Please try again.");
+      return;
+    }
+
+    // Clear error on successful auth
+    setAuthError("");
 
     // Set current user in Redux and localStorage
     dispatch(setCurrentUser(selectedCharacter));
@@ -151,9 +159,19 @@ const AuthPage: React.FC = () => {
             type="password"
             placeholder="Enter your password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-800 placeholder-gray-400 transition-all duration-200 focus:border-pink-bright focus:outline-none focus:ring-2 focus:ring-pink-bright/20"
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setAuthError("");
+            }}
+            className={`w-full rounded-xl border px-4 py-3 text-base text-gray-800 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 ${
+              authError
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                : "border-gray-300 focus:border-pink-bright focus:ring-pink-bright/20"
+            }`}
           />
+          {authError && (
+            <p className="text-sm text-red-600 font-medium">{authError}</p>
+          )}
         </div>
 
         {/* Submit Button */}
