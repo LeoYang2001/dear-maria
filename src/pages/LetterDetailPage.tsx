@@ -116,7 +116,7 @@ const LetterDetailPage: React.FC = () => {
 
             {/* Right Side - Letter Content */}
             <div className="w-2/3 p-4  flex flex-col relative overflow-y-auto ">
-              <div className="text-lg leading-relaxed text-gray-700 whitespace-pre-wrap flex-1">
+              <div className="text-xl leading-relaxed text-gray-700 whitespace-pre-wrap flex-1">
                 {skipAnimation ? (
                   <p>{letter.content}</p>
                 ) : (

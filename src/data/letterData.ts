@@ -7,7 +7,7 @@ export const letterMockData = [
 
 To date, we’ve been together for just a little over a month, and I’ve been thinking about what kind of gift I should prepare for you. I told myself it had to be something special and sweet, because that’s exactly how you’ve always treated me.
 
-I know I’m not always the most meticulous guy, and I want to apologize for that, because you deserve so much more. It honestly hurts me to know that ever since you moved to the U.S., your motivation to celebrate your birthday has faded for various reasons. That’s why I wanted to give you something that might bring back a little of that light, something meaningful and heartfelt.
+I know I’m not always the most meticulous guy, and I want to apologize for that, because you deserve so much more. It honestly hurts me to learn that ever since you moved to the U.S., your motivation to celebrate your birthday has faded for various reasons. That’s why I wanted to give you something that might bring back a little of that happiness and excitement.
 
 I want to give you a gift that isn’t just a moment, but a feeling, something that holds the warmth and care you’ve quietly given to others, and to me. So I decided to write to you, to capture the little pieces of thought and emotion that words can hold. These letters are my way of storing what often overflows when I think of you, and I’ll give them all to you on your birthday.
 
