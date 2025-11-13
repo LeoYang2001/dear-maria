@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Play, Pause, Volume2, Maximize, X } from "lucide-react";
 import pianoMp4 from "../assets/piano.mp4";
+import GreetingModal from "./GreetingModal";
 
 interface MusicPlayerProps {
   isVisible?: boolean;
@@ -17,6 +18,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(true);
 
   // Auto-play when component mounts or autoPlay prop changes
   useEffect(() => {
@@ -123,6 +125,17 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           crossOrigin="anonymous"
           muted
           style={{ display: "none" }}
+        />
+      )}
+
+      {/* Create a mask that greets maria when she just login  */}
+      {showGreeting && (
+        <GreetingModal
+          onClose={() => setShowGreeting(false)}
+          onBegin={() => {
+            setShowGreeting(false);
+            handlePlayPause();
+          }}
         />
       )}
 
