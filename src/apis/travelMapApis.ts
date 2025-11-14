@@ -176,19 +176,10 @@ export const togglePinStatus = async (
 ): Promise<void> => {
   try {
     const pinRef = doc(db, TIMECAPSULES_COLLECTION, pinId);
-    const docSnapshot = await getDocs(
-      query(
-        collection(db, TIMECAPSULES_COLLECTION),
-        where("__name__", "==", pinId)
-      )
-    );
-
-    if (!docSnapshot.empty) {
-      await updateDoc(pinRef, {
-        type: newType,
-      });
-      console.log("Pin status updated:", pinId);
-    }
+    await updateDoc(pinRef, {
+      type: newType,
+    });
+    console.log("Pin status updated:", pinId);
   } catch (error) {
     console.error("Error updating pin status:", error);
     throw error;
