@@ -12,6 +12,10 @@ import letterPic6 from "../assets/letter_pics/letter_6.png";
 import letterPic7 from "../assets/letter_pics/letter_7.png";
 import letterPic8 from "../assets/letter_pics/letter_8.png";
 import letterPic9 from "../assets/letter_pics/letter_9.png";
+import letterPic10 from "../assets/letter_pics/letter_10.png";
+import letterPic11 from "../assets/letter_pics/letter_11.png";
+import letterPic12 from "../assets/letter_pics/letter_12.png";
+import letterPic13 from "../assets/letter_pics/letter_13.png";
 
 interface LetterData {
   id: number;
@@ -31,6 +35,10 @@ const letterPicMap: { [key: string]: string } = {
   "letter_7.png": letterPic7,
   "letter_8.png": letterPic8,
   "letter_9.png": letterPic9,
+  "letter_10.png": letterPic10,
+  "letter_11.png": letterPic11,
+  "letter_12.png": letterPic12,
+  "letter_13.png": letterPic13,
   // Add other letter pictures here as needed
 };
 

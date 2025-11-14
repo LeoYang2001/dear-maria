@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { TypeAnimation } from "react-type-animation";
+import { SkipForward } from "lucide-react";
 import HeartBeat from "./HeartBeat";
 
 interface GreetingModalProps {
@@ -7,6 +9,11 @@ interface GreetingModalProps {
 }
 
 const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
+  const [skipAnimation, setSkipAnimation] = useState(false);
+
+  const greetingText =
+    "I know you have been guessing what is your gift for your 22nd birthday. Well the time has come and I am so excited to share it with you! This is the most special project I have ever created, a space where only belongs to us, I hope we will keep adding more memories here together as we hold our hands experiencing various adventures in our beautiful life.";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurry dark background */}
@@ -21,14 +28,35 @@ const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
           </div>
 
           {/* Main greeting */}
-          <div className="space-y-4">
+          <div className="space-y-4 relative">
             <h1 className="text-3xl font-bold bg-linear-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
-              Happy Birthday, my girl! 🎂
+              Dear Maria,
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              This website was created especially for you. A special place to
-              celebrate our beautiful memories together.
+            <p className="text-xl text-gray-600 text-left min-h-48">
+              {skipAnimation ? (
+                <span>{greetingText}</span>
+              ) : (
+                <TypeAnimation
+                  sequence={[greetingText]}
+                  wrapper="span"
+                  speed={40}
+                  style={{ display: "inline" }}
+                  cursor={true}
+                  repeat={0}
+                />
+              )}
             </p>
+            {/* Skip Button - only show during animation */}
+            {!skipAnimation && (
+              <button
+                onClick={() => setSkipAnimation(true)}
+                className="absolute top-0 right-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-all text-sm font-medium cursor-pointer"
+                title="Skip typing animation"
+              >
+                <span>Skip</span>
+                <SkipForward size={16} />
+              </button>
+            )}
           </div>
 
           {/* Closing message */}

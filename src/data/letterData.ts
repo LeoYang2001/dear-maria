@@ -154,30 +154,68 @@ I love you, and I’m grateful that we get to walk this path together in faith. 
   },
   {
     id: 10,
-    title: "Helping You Shine",
+    title: "Heart of a Big Sister",
     letter: "H",
-    content: "This is the content of letter 10.",
+    content: `Dear Maria,
+
+You are the best sister I have ever seen. Truly.
+Franzyn is an active, lovely, and incredibly cute kid, and beyond that, she’s a fortunate one. She’s lucky because she has a sister like you.
+
+I always admire the patience you have with her, and the way you stay calm and gentle even when she gets grumpy or unreasonable. You always manage to be the bigger person.
+
+I know I’ve mentioned before that there are some flaws in your parents’ approach to parenting, and sometimes I’ve expressed concern when I saw how you reacted in the harder moments, when she cried or rebelled. But honestly? I don’t think I could ever match the level of patience and love you show her.
+
+You’re doing the best you possibly can.
+I just want you to know this, clearly and proudly:
+you are the best sister in the world.
+    `,
     pic_url: "letter_10.png",
   },
   {
     id: 11,
-    title: "Days of Joy",
+    title: "Dog Mom of the Year",
     letter: "D",
-    content: "This is the content of letter 11.",
+    content: `Dear Maria,
+
+I think you’re going to be an amazing mom one day, patient, loving, and meticulously caring. I already see those qualities in the way you raise Lucky and walk him every morning and every night.
+
+I still remember the night Lucky had diarrhea in the middle of the night. I was the first one to smell something funky, and shame on me, I was too lazy to get up and help. You on the other hand, you acted like an officer reporting to an emergency. You immediately grabbed the cleaners, fixed the mess, even comforted Lucky, and fed him his meds, all in the middle of the night, without complaining once.
+
+Yes, we’ve talked about getting another dog someday, hopefully a Shiba, but bebe, I’ll be honest. I don’t know if I could ever care for a dog as well as you do unless you’re there with me. Because of you, I have so much more confidence in myself. ❤️
+    `,
     pic_url: "letter_11.png",
   },
   {
     id: 12,
-    title: "Adventurous Heart",
+    title: "A Taste of Your Love",
     letter: "A",
-    content: "This is the content of letter 12.",
+    content: `Dear Maria,
+
+Remember the first time you made me that incredible banana bread? Your baking skills are other worldly. Every time I leave your place, you always make sure I’m going home with something nice you’ve made, it’s either chocolate cookies, protein pancakes, or whatever I was craving about.
+
+And you’re always so thoughtful about it too, no added sugar, zero-calorie sweeteners, extra protein, all tailored just for me. And I hope you don't mind how I always brag about you doing meal preps for me to my friends. I appreciate all of it more than I can say, and I hope I never take any of it for granted.
+
+If I ever forget, just remind me of these moments, the care behind every delicious bite.
+
+Every treat you make is a taste of your love. ❤️
+    `,
     pic_url: "letter_12.png",
   },
   {
     id: 13,
-    title: "Young and Free",
+    title: "You Had Me Then",
     letter: "Y",
-    content: "This is the content of letter 13.",
+    content: `Dear Maria,
+
+Do you remember that time before we were even officially together, when you went to Lexington with me to help me move out from my old apartment? I still think about how you carried me cleaning the place, met my friends (even though they were all speaking Chinese and you didn’t understand a word). 
+
+And remember when I was about to throw out that old furniture? You had the amazing idea to put it on Facebook Marketplace, and we actually sold it for 70 bucks. I’ll never forget how we celebrated with that amazing meal at the authentic Chinese restaurant afterward. It was such a simple moment, but so meaningful, and it showed me how thoughtful, supportive, and naturally loving you are.
+
+That day motivated me. It made me realize how much I wanted to be with you, not just then, but for a long, long time.
+
+Here’s to that day, and all the delightful moments that led us here.
+Because, my dearest girl you had me then. ❤️
+    `,
     pic_url: "letter_13.png",
   },
 ];
