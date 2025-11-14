@@ -427,7 +427,7 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
                     ) : (
                       <>
                         <Lock size={18} />
-                        <span>Seal & Schedule</span>
+                        <span>Schedule</span>
                       </>
                     )}
                   </button>
