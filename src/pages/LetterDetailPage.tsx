@@ -5,6 +5,13 @@ import { ArrowLeft, SkipForward } from "lucide-react";
 import { TypeAnimation } from "react-type-animation";
 import letterPic1 from "../assets/letter_pics/letter_1.png";
 import letterPic2 from "../assets/letter_pics/letter_2.png";
+import letterPic3 from "../assets/letter_pics/letter_3.png";
+import letterPic4 from "../assets/letter_pics/letter_4.png";
+import letterPic5 from "../assets/letter_pics/letter_5.png";
+import letterPic6 from "../assets/letter_pics/letter_6.png";
+import letterPic7 from "../assets/letter_pics/letter_7.png";
+import letterPic8 from "../assets/letter_pics/letter_8.png";
+import letterPic9 from "../assets/letter_pics/letter_9.png";
 
 interface LetterData {
   id: number;
@@ -17,6 +24,13 @@ interface LetterData {
 const letterPicMap: { [key: string]: string } = {
   "letter_1.png": letterPic1,
   "letter_2.png": letterPic2,
+  "letter_3.png": letterPic3,
+  "letter_4.png": letterPic4,
+  "letter_5.png": letterPic5,
+  "letter_6.png": letterPic6,
+  "letter_7.png": letterPic7,
+  "letter_8.png": letterPic8,
+  "letter_9.png": letterPic9,
   // Add other letter pictures here as needed
 };
 
