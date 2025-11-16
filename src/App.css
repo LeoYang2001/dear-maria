@@ -81,3 +81,28 @@
   color: #e56d7a;
   transition: all 0.4s ease;
 }
+
+/* Custom scrollbar styling */
+.modal-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scrollable::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.modal-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Firefox scrollbar styling */
+.modal-scrollable {
+  scrollbar-color: #d1d5db transparent;
+  scrollbar-width: thin;
+}

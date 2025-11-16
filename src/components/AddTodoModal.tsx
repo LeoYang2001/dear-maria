@@ -34,6 +34,21 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
     setSuccess(false);
   };
 
+  // Auto-dismiss error and success messages
+  React.useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  React.useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length + selectedImages.length > 5) {
@@ -127,7 +142,12 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white  rounded-3xl shadow-2xl  w-[30vw]  h-[65vh] flex flex-col  "
+              className="bg-white relative rounded-3xl shadow-2xl w-[30vw] h-[80vh] flex flex-col modal-scrollable"
+              style={{
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
               {/* Header */}
               <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center rounded-t-3xl">
@@ -143,7 +163,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
               </div>
 
               {/* Content */}
-              <form className="p-6 space-y-4">
+              <form className="p-6 space-y-4 flex-1 overflow-y-auto modal-scrollable">
                 {/* Success Message */}
                 <AnimatePresence>
                   {success && (
@@ -151,7 +171,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-green-50 border border-green-200 rounded-2xl p-3 text-center"
+                      className="bg-green-50 border border-green-200 rounded-2xl p-3 text-center absolute w-[80%] left-[10%]"
                     >
                       <p className="text-green-700 font-medium">
                         ✓ Adventure added!
@@ -167,7 +187,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-red-50 border border-red-200 rounded-2xl p-3 text-center"
+                      className="bg-red-50 border border-red-200 rounded-2xl p-3 text-center absolute w-[80%] left-[10%]"
                     >
                       <p className="text-red-700 font-medium text-sm">
                         {error}
@@ -275,23 +295,31 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
               </form>
               {/* Action Buttons */}
               {!success && !error && (
-                <div className="flex gap-3 py-6   flex-1 px-6">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    disabled={isLoading}
-                    className="flex-1 px-4 py-3 cursor-pointer rounded-2xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    onClick={handleSubmit}
-                    disabled={isLoading}
-                    className="flex-1 px-4 py-3 cursor-pointer rounded-2xl bg-linear-to-r  text-white font-medium  bg-pink-400 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? "Adding..." : "Add Adventure"}
-                  </button>
+                <div className="flex gap-3 flex-col justify-end pb-6 px-6 border-t border-gray-100 bg-white">
+                  <div className="flex gap-3 flex-row items-center">
+                    <button
+                      type="button"
+                      style={{
+                        height: "44px",
+                      }}
+                      onClick={onClose}
+                      disabled={isLoading}
+                      className="flex-1 px-4 py-3 cursor-pointer rounded-2xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      style={{
+                        height: "44px",
+                      }}
+                      onClick={handleSubmit}
+                      disabled={isLoading}
+                      className="flex-1 px-4 py-3 cursor-pointer rounded-2xl bg-linear-to-r  text-white font-medium  bg-pink-400 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? "Adding..." : "Add Adventure"}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
