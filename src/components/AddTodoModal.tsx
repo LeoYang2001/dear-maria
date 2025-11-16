@@ -127,7 +127,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white  rounded-3xl shadow-2xl  w-[30vw]  h-[60vh] flex flex-col  "
+              className="bg-white  rounded-3xl shadow-2xl  w-[30vw]  h-[65vh] flex flex-col  "
             >
               {/* Header */}
               <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center rounded-t-3xl">
@@ -275,7 +275,7 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({
               </form>
               {/* Action Buttons */}
               {!success && !error && (
-                <div className="flex gap-3 pt-4  px-6">
+                <div className="flex gap-3 py-6   flex-1 px-6">
                   <button
                     type="button"
                     onClick={onClose}

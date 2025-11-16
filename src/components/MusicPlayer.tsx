@@ -14,11 +14,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGreeting, setShowGreeting] = useState(true);
+  const [position, setPosition] = useState({
+    x: window.innerWidth - 600,
+    y: window.innerHeight - 120,
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Auto-play when component mounts or autoPlay prop changes
   useEffect(() => {
@@ -32,6 +39,56 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       setIsPlaying(true);
     }
   }, [autoPlay, isVisible]);
+
+  // Handle drag start
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    if (playerRef.current) {
+      const rect = playerRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+  };
+
+  // Handle drag move
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging && playerRef.current) {
+        let newX = e.clientX - dragOffset.x;
+        let newY = e.clientY - dragOffset.y;
+
+        // Get player dimensions
+        const playerWidth = playerRef.current.offsetWidth;
+        const playerHeight = playerRef.current.offsetHeight;
+
+        // Get window dimensions
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Apply boundary constraints
+        newX = Math.max(0, Math.min(newX, windowWidth - playerWidth));
+        newY = Math.max(0, Math.min(newY, windowHeight - playerHeight));
+
+        setPosition({ x: newX, y: newY });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   if (!isVisible) return null;
 
@@ -139,8 +196,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         />
       )}
 
-      <div className="fixed bottom-6 right-6 z-40">
-        <div className="bg-white rounded-full shadow-lg px-6 py-4 flex items-center gap-4 border border-gray-200 hover:shadow-xl transition-shadow">
+      <div
+        ref={playerRef}
+        className="fixed z-40 select-none"
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+      >
+        <div
+          className="bg-white  rounded-full shadow-lg px-6 py-4 flex items-center gap-4 border border-gray-200 hover:shadow-xl transition-shadow cursor-grab active:cursor-grabbing"
+          onMouseDown={handleMouseDown}
+        >
           {/* Play/Pause Button */}
           <button
             onClick={handlePlayPause}
