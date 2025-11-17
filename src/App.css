@@ -106,3 +106,27 @@
   scrollbar-color: #d1d5db transparent;
   scrollbar-width: thin;
 }
+
+/* Grid scrollable container styling */
+.grid-scrollable {
+  scrollbar-color: #d1d5db transparent;
+  scrollbar-width: thin;
+}
+
+.grid-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.grid-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.grid-scrollable::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.grid-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

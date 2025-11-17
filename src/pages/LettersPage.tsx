@@ -68,7 +68,7 @@ const LettersPage: React.FC = () => {
           >
             <h2
               style={{
-                fontSize: 160,
+                fontSize: 120,
               }}
             >
               {letter.letter}
@@ -121,7 +121,7 @@ const LettersPage: React.FC = () => {
           >
             <h2
               style={{
-                fontSize: 160,
+                fontSize: 120,
               }}
             >
               {letter.letter}

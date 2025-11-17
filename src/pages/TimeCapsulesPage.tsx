@@ -68,10 +68,10 @@ const TimeCapsulesPage: React.FC = () => {
     <div className="h-full select-none w-full flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-12 w-full">
-        <h1 className="text-6xl font-elegant text-gray-900 leading-tight">
+        <h1 className="text-3xl font-elegant text-gray-900 leading-tight">
           Time Capsules
         </h1>
-        <p className="text-2xl text-center text-gray-400 mt-4">
+        <p className="text-lg text-center text-gray-400 mt-4">
           Letters from the past, sealed with trust, waiting for their moment
         </p>
       </div>

@@ -68,14 +68,14 @@ const LetterDetailPage: React.FC = () => {
       {/* Back Button */}
       <button
         onClick={() => navigate("/main", { state: { disableAnimation: true } })}
-        className="flex items-center space-x-2 text-pink-bright hover:text-pink-600 transition-colors mb-8 w-fit"
+        className="flex absolute top-6 left-6 items-center space-x-2 text-pink-bright hover:text-pink-600 transition-colors mb-8 w-fit"
       >
-        <ArrowLeft size={30} />
-        <span className=" text-xl cursor-pointer">Back</span>
+        <ArrowLeft size={26} />
+        <span className=" text-md cursor-pointer">Back</span>
       </button>
 
       {/* Letter Container */}
-      <div className="flex-1  flex flex-col items-center justify-start max-w-4xl mx-auto w-full">
+      <div className="flex-1   flex flex-col items-center justify-start max-w-4xl mx-auto w-full">
         {/* Letter Initial and Title - Same Row */}
         <div className="w-full flex items-baseline justify-center gap-4 mb-12">
           {/* Letter Initial - Shared Element */}
@@ -83,7 +83,7 @@ const LetterDetailPage: React.FC = () => {
             layoutId={`letter-${letter.id}`}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
           >
-            <div className="text-9xl font-bold text-pink-bright leading-tight">
+            <div className="text-8xl font-bold text-pink-bright leading-tight">
               {letter.letter}
             </div>
           </motion.div>
@@ -93,7 +93,7 @@ const LetterDetailPage: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-5xl font-elegant font-bold text-gray-900 flex-1 leading-tight"
+            className="text-3xl font-elegant font-bold text-gray-900 flex-1 leading-tight"
           >
             {letter.title.slice(1, letter.title.length)}
           </motion.h1>
@@ -107,7 +107,7 @@ const LetterDetailPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="bg-white rounded-3xl  shadow-2xl overflow-hidden  mt-6"
+          className="bg-white rounded-3xl shadow-2xl overflow-hidden  mt-6"
         >
           <div className="flex w-full h-[60vh] ">
             {/* Left Side - Letter Picture */}
@@ -138,7 +138,7 @@ const LetterDetailPage: React.FC = () => {
 
             {/* Right Side - Letter Content */}
             <div className="w-2/3 p-4  flex flex-col relative overflow-y-auto ">
-              <div className="text-xl leading-relaxed text-gray-700 whitespace-pre-wrap flex-1">
+              <div className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap flex-1">
                 {skipAnimation ? (
                   <p>{letter.content}</p>
                 ) : (

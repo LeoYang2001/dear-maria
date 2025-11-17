@@ -197,7 +197,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             {/* Title */}
             <div className="flex-1 min-w-0">
               <h3
-                className={`text-lg font-semibold truncate ${getTitleStyle()}`}
+                className={`text-md font-semibold truncate ${getTitleStyle()}`}
               >
                 {item.title}
               </h3>

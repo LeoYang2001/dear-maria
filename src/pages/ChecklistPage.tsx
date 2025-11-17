@@ -135,18 +135,18 @@ const ChecklistPage: React.FC = () => {
     <div className="h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-8 w-full">
-        <h1 className="text-6xl font-elegant text-gray-900 flex-1 leading-tight">
+        <h1 className="text-3xl font-elegant text-gray-900 flex-1 leading-tight">
           Our Checklist
         </h1>
-        <p className="text-2xl text-center text-gray-400 mt-4">
+        <p className="text-lg text-center text-gray-400 mt-4">
           Adventures and moments we want to share together
         </p>
       </div>
 
       {/* Progress Section */}
-      <div className="w-full  max-w-2xl mb-8">
+      <div className="w-full  max-w-2xl mb-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-md text-[#e56d7a]">
+          <span className="text-sm text-[#e56d7a]">
             Progress: {completedItems} of {totalItems} completed
           </span>
           <span className="text-sm font-medium text-md text-[#e56d7a]">
@@ -172,7 +172,7 @@ const ChecklistPage: React.FC = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleInputKeyPress}
-            className="flex-1 px-6 py-4 rounded-3xl border-2 border-gray-200 focus:border-pink-bright focus:outline-none text-lg placeholder-gray-400 transition-colors"
+            className="flex-1 px-6 py-2 rounded-3xl border-2 border-gray-200 focus:border-pink-bright focus:outline-none text-md placeholder-gray-400 transition-colors"
           />
 
           {/* Add Button Component */}

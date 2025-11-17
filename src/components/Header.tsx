@@ -66,6 +66,7 @@ function Header({
     <nav
       style={{
         backgroundColor: "#fff8f7",
+        height: 80,
       }}
       className=" shadow-sm"
     >
@@ -97,7 +98,7 @@ function Header({
                 </span>
                 <span
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
                     color: activeTab === tab.id ? "#e67582" : "#6b7280",
                   }}
                 >

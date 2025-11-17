@@ -23,7 +23,7 @@ const SearchAddButton: React.FC<SearchAddButtonProps> = ({ onAddClick }) => {
         onClick={onAddClick}
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.92 }}
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-linear-to-br from-pink-bright to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl cursor-pointer border border-pink-400 border-opacity-50"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-linear-to-br from-pink-bright to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl cursor-pointer border border-pink-400 border-opacity-50"
       >
         <Plus size={26} strokeWidth={3} />
       </motion.button>

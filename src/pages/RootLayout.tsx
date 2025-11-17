@@ -31,10 +31,12 @@ const RootLayout: React.FC = () => {
   };
 
   return (
-    <div className=" w-screen h-screen  flex  flex-col ">
+    <div className=" w-screen h-screen   flex  flex-col ">
       <Header setActiveTab={setActiveTab} activeTab={activeTab} />
 
-      <main className="flex-1  w-full ">{renderContent()}</main>
+      <main className=" h-[calc(100%-80px)] overflow-scroll   w-full ">
+        {renderContent()}
+      </main>
     </div>
   );
 };

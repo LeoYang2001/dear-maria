@@ -241,19 +241,19 @@ const TravelMapPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-8">
+    <div className="h-full select-none  w-full  pb-12 flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-8 w-full">
-        <h1 className="text-6xl font-elegant text-gray-900 flex-1 leading-tight">
+        <h1 className="text-3xl font-elegant text-gray-900 flex-1 leading-tight">
           Our Travel Map
         </h1>
-        <p className="text-2xl text-center text-gray-400 mt-4">
+        <p className="text-lg text-center text-gray-400 mt-4">
           Every place we've explored together
         </p>
       </div>
 
       {/* Search Box */}
-      <form className="w-full max-w-2xl mb-6 relative" onSubmit={handleSubmit}>
+      <form className="w-full max-w-2xl mb-4 relative" onSubmit={handleSubmit}>
         <div className="relative">
           <input
             type="text"
@@ -262,7 +262,7 @@ const TravelMapPage: React.FC = () => {
             onFocus={() => value.trim() && setShowSuggestions(true)}
             disabled={!ready || isLoading}
             placeholder="Search for a city..."
-            className="w-full px-6 py-3 pl-12 text-lg border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 pl-12 text-md border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           {isLoading ? (
             <Loader className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-500 animate-spin" />
