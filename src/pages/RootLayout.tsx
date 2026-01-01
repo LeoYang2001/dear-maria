@@ -5,9 +5,15 @@ import LettersPage from "./LettersPage";
 import ChecklistPage from "./ChecklistPage";
 import TimeCapsulesPage from "./TimeCapsulesPage";
 import TravelMapPage from "./TravelMapPage";
+import NewYearResolutionsPage from "./NewYearResolutionsPage";
 import Header from "../components/Header";
 
-type TabType = "letters" | "checklist" | "timecapsules" | "travelmap";
+type TabType =
+  | "letters"
+  | "checklist"
+  | "timecapsules"
+  | "travelmap"
+  | "resolutions";
 
 const RootLayout: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
@@ -25,6 +31,8 @@ const RootLayout: React.FC = () => {
         return <TimeCapsulesPage />;
       case "travelmap":
         return <TravelMapPage />;
+      case "resolutions":
+        return <NewYearResolutionsPage />;
       default:
         return <LettersPage />;
     }

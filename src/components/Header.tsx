@@ -1,4 +1,11 @@
-import { Footprints, ListChecks, LogOut, Mail, PillBottle } from "lucide-react";
+import {
+  Footprints,
+  ListChecks,
+  LogOut,
+  Mail,
+  PillBottle,
+  Sparkles,
+} from "lucide-react";
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +13,12 @@ import { useDispatch } from "react-redux";
 import { logout } from "../redux/authSlice";
 import HeartBeat from "./HeartBeat";
 
-type TabType = "letters" | "checklist" | "timecapsules" | "travelmap";
+type TabType =
+  | "letters"
+  | "checklist"
+  | "timecapsules"
+  | "travelmap"
+  | "resolutions";
 
 function Header({
   setActiveTab,
@@ -54,6 +66,11 @@ function Header({
       id: "travelmap" as TabType,
       label: "Travel Map",
       icon: (color: string) => <Footprints color={color} />,
+    },
+    {
+      id: "resolutions" as TabType,
+      label: "2026 Goals",
+      icon: (color: string) => <Sparkles color={color} />,
     },
   ];
 
