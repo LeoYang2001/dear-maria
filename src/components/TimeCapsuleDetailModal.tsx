@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, User, Mail, Heart } from "lucide-react";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
+import { sendReadReceipt } from "../apis/timeCapsuleApis";
 
 interface TimeCapsuleDetailModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface TimeCapsuleDetailModalProps {
   onClose: () => void;
   isReceived: boolean;
   isUnlocked: boolean;
+  onSendReadReceipt?: (capsuleId: string) => Promise<void>;
 }
 
 const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
@@ -17,15 +19,55 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
   onClose,
   isReceived,
   isUnlocked,
+  onSendReadReceipt,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [receiptSent, setReceiptSent] = useState(false);
   const createdDate = new Date(capsule.createdDate);
   const unlockDate = new Date(capsule.unlockDate);
   const now = new Date();
   const daysRemaining = Math.ceil(
     (unlockDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
   );
+
+  
+
+  useEffect(() => {
+    if(isReceived && isUnlocked && !capsule.isRead && isOpen) {
+      // Start countdown from 5
+      setCountdown(5);
+      
+      // Update countdown every second
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === null || prev <= 1) return null;
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Set a 5-second timer to send read receipt
+      const readReceiptTimer = setTimeout(async () => {
+        // Send read receipt after 5 seconds
+        try {
+          await sendReadReceipt(capsule.id);
+          await onSendReadReceipt?.(capsule.id);
+          setCountdown(null);
+          setReceiptSent(true);
+        } catch (error) {
+          alert("Failed to send read receipt. Please try again later.");
+        }
+      }, 5000);
+
+      // Cleanup: clear timers if modal is closed before 5 seconds
+      return () => {
+        clearTimeout(readReceiptTimer);
+        clearInterval(countdownInterval);
+        setCountdown(null);
+      };
+    }
+  }, [isReceived, isUnlocked, capsule.isRead, isOpen, capsule.id, onSendReadReceipt])
+  
 
   return (
     <AnimatePresence>
@@ -143,7 +185,7 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
 
                 {/* Message Content - Journal Style */}
                 <div className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 min-h-[200px] shadow-sm">
-                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base break-all">
+                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap text-base break-words">
                     {capsule.message}
                   </p>
                 </div>
@@ -165,30 +207,31 @@ const TimeCapsuleDetailModal: React.FC<TimeCapsuleDetailModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Email Notification Info */}
-                  {capsule.emailAddress && (
-                    <div className="flex items-center gap-2 text-sm text-purple-600 bg-purple-50 px-4 py-3 rounded-xl border border-purple-100">
-                      <Mail size={16} className="shrink-0" />
-                      <span>Email notification set</span>
-                    </div>
-                  )}
+                  
+                 
                 </div>
               </div>
 
               {/* Footer Action */}
-              {isReceived && isUnlocked && (
-                <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
-                  <button
-                    onClick={() => setIsLiked(!isLiked)}
-                    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-pink-500 transition-colors"
-                  >
-                    <Heart
-                      size={18}
-                      className={isLiked ? "fill-pink-500 text-pink-500" : ""}
-                    />
-                    <span>{isLiked ? "Liked" : "Like this message"}</span>
-                  </button>
-                </div>
+              {(countdown !== null || receiptSent) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="border-t border-gray-100 px-8 py-3 bg-gray-50/50"
+                >
+                  {countdown !== null ? (
+                    <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse"></div>
+                      <span>Read receipt in {countdown}s</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                      <span>Read receipt sent</span>
+                    </div>
+                  )}
+                </motion.div>
               )}
             </div>
           </motion.div>

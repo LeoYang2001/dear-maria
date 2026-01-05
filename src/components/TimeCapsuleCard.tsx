@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, CheckCheck, MailOpen } from "lucide-react";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
 import TimeCapsuleDetailModal from "./TimeCapsuleDetailModal";
 import "../styles/timeCapsuleCard.css";
 
 interface TimeCapsuleCardProps {
   capsule: TimeCapsule;
+  onSendReadReceipt?: (capsuleId: string) => Promise<void>;
 }
 
-const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({ capsule }) => {
+const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({
+  capsule,
+  onSendReadReceipt,
+}) => {
   //get currentUser from local storage
   const currentUser = localStorage.getItem("currentUser");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,6 +65,39 @@ const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({ capsule }) => {
               <Mail size={24} className="text-pink-500" />
             )}
           </div>
+          
+          {/* Read status indicator */}
+          {isUnlocked && (
+            <div className="flex items-center gap-1.5">
+              {isReceived ? (
+                // For received capsules - show if we read it
+                capsule.isRead ? (
+                  <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    <MailOpen size={12} />
+                    <span>Read</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-xs text-pink-600 bg-pink-50 px-2 py-1 rounded-full">
+                    <Mail size={12} />
+                    <span>Unread</span>
+                  </div>
+                )
+              ) : (
+                // For sent capsules - show if recipient read it
+                capsule.isRead ? (
+                  <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <CheckCheck size={12} />
+                    <span>Read</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">
+                    <Mail size={12} />
+                    <span>Sent</span>
+                  </div>
+                )
+              )}
+            </div>
+          )}
         </div>
 
         <>
@@ -115,6 +152,7 @@ const TimeCapsuleCard: React.FC<TimeCapsuleCardProps> = ({ capsule }) => {
           onClose={() => setIsModalOpen(false)}
           isReceived={isReceived}
           isUnlocked={isUnlocked}
+          onSendReadReceipt={onSendReadReceipt}
         />
       )}
     </>

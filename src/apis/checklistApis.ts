@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import type { Todo } from "../types/common/Todo";
 import { db } from "../firebase.ts";
+import { sendEmail } from "./sendNotification.ts";
 
 const TODOS_COLLECTION = "todos";
 
@@ -43,6 +44,17 @@ export const addTodoItem = async (
 
     const docRef = await addDoc(collection(db, TODOS_COLLECTION), todoData);
     console.log("Todo added with ID:", docRef.id);
+
+    //send notification email here
+    const recipient = createdBy === "maria" ? "Leo" : "Maria";
+    await sendEmail('account1', {
+      to_name: recipient,
+      from_name: createdBy === "maria" ? "Maria" : "Leo",
+      task_title: title,
+      task_description: description,
+      message: `A new task "${title}" has been added to your checklist!`,
+    });
+    
     return docRef.id;
   } catch (error) {
     console.error("Error adding todo:", error);

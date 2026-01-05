@@ -27,6 +27,10 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  const [ifControlPanel, setIfControlPanel] = useState(true)
+
+
+  
   // Auto-play when component mounts or autoPlay prop changes
   useEffect(() => {
     if (autoPlay && videoRef.current && audioRef.current && isVisible) {
@@ -189,14 +193,24 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       {showGreeting && (
         <GreetingModal
           onClose={() => setShowGreeting(false)}
-          onBegin={() => {
-            setShowGreeting(false);
+          onBegin={(ifSkip:boolean) => {
+            if(!ifSkip)
+            {
+              setShowGreeting(false);
             handlePlayPause();
+            }
+            else{
+              setShowGreeting(false);
+              setIfControlPanel(false)
+            }
           }}
         />
       )}
 
-      <div
+      {/* Music player control panel  */}
+      {
+        ifControlPanel && (
+          <div
         ref={playerRef}
         className="fixed z-40 select-none"
         style={{
@@ -257,7 +271,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <Maximize size={18} className="text-gray-600" />
           </button>
         </div>
-      </div>
+      </div>)
+      }
 
       {/* Fullscreen Video Modal */}
       {isFullscreen && (

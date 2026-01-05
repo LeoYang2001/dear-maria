@@ -316,20 +316,7 @@ const NewYearResolutionsPage: React.FC = () => {
           </div>
         )}
 
-        {/* Save Button */}
-        {resolutions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex justify-center"
-          >
-            <button className="px-12 py-4 bg-linear-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full font-semibold text-lg transition-all active:scale-95 shadow-xl flex items-center gap-3">
-              <Sparkles size={24} />
-              Save Our 2026 Resolutions
-              <Sparkles size={24} />
-            </button>
-          </motion.div>
-        )}
+      
       </div>
     </div>
   );

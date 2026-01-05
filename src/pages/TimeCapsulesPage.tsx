@@ -64,6 +64,15 @@ const TimeCapsulesPage: React.FC = () => {
     setActiveTab("sent");
   };
 
+  const handleSendReadReceipt = async (capsuleId: string) => {
+    // Update the local state immediately for UI responsiveness
+    setCapsules((prevCapsules) =>
+      prevCapsules.map((c) =>
+        c.id === capsuleId ? { ...c, isRead: true } : c
+      )
+    );
+  };
+
   return (
     <div className="h-full select-none w-full flex flex-col justify-start items-center pt-8 px-8">
       {/* Header */}
@@ -166,7 +175,11 @@ const TimeCapsulesPage: React.FC = () => {
           {/* Grid */}
           <div className="w-full grid grid-cols-4 gap-12   px-20 mb-8">
             {currentCapsules.map((capsule) => (
-              <TimeCapsuleCard key={capsule.id} capsule={capsule} />
+              <TimeCapsuleCard
+                key={capsule.id}
+                capsule={capsule}
+                onSendReadReceipt={handleSendReadReceipt}
+              />
             ))}
           </div>
 

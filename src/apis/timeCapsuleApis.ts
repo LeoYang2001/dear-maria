@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
 import { db } from "../firebase";
 
@@ -23,7 +23,7 @@ export const addTimeCapsule = async (
       unlockDate: newTimeCapsule.unlockDate,
       createdDate: newTimeCapsule.createdDate,
       createdBy: newTimeCapsule.createdBy,
-      emailAddress: newTimeCapsule.emailAddress,
+      isRead: newTimeCapsule.isRead ?? false,
     };
 
     // Only add picture if it exists
@@ -68,6 +68,7 @@ export const getAllTimeCapsules = async (): Promise<
         createdDate: data.createdDate,
         createdBy: data.createdBy,
         picture: data.picture,
+        isRead: data.isRead ?? false,
       });
     });
 
@@ -86,3 +87,18 @@ export const getAllTimeCapsules = async (): Promise<
     throw error;
   }
 };
+
+// Function to send read receipt
+export const sendReadReceipt = async (timeCapsuleId: string): Promise<boolean> => {
+  try {
+    const timeCapsuleRef = doc(db, TIMECAPSULES_COLLECTION, timeCapsuleId);
+    await updateDoc(timeCapsuleRef, {
+      isRead: true
+    });
+    console.log("Read receipt sent for time capsule:", timeCapsuleId);
+    return true;
+  } catch (error) {
+    console.error("Error sending read receipt:", error);
+    throw error;
+  }
+}

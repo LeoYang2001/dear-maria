@@ -5,7 +5,7 @@ import HeartBeat from "./HeartBeat";
 
 interface GreetingModalProps {
   onClose: () => void;
-  onBegin: () => void;
+  onBegin: (ifSkip: boolean) => void;
 }
 
 const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
@@ -64,13 +64,21 @@ const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
             Made for you, by Leo ❤️
           </p>
 
-          {/* Close button */}
-          <button
-            onClick={onBegin}
-            className="mt-8 px-8 py-3  bg-pink-300   text-white rounded-full font-semibold hover:shadow-lg hover:bg-pink-500 cursor-pointer transition-all duration-200 hover:scale-105"
-          >
-            Let's Begin ✨
-          </button>
+          {/* Action buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => onBegin(false)}
+              className="flex-1 px-8 py-3 bg-pink-400 text-white rounded-full font-semibold hover:shadow-lg hover:bg-pink-500 cursor-pointer transition-all duration-200 hover:scale-105"
+            >
+              Let's Begin ✨
+            </button>
+            <button
+              onClick={() => onBegin(true)}
+              className="flex-1 px-8 py-3 bg-white border-2 border-gray-300 text-gray-600 rounded-full font-medium hover:border-gray-400 hover:bg-gray-50 cursor-pointer transition-all duration-200"
+            >
+              Skip Music
+            </button>
+          </div>
         </div>
       </div>
     </div>

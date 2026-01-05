@@ -101,7 +101,7 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
           unlockDate: formData.unlockDate.toISOString(),
           createdDate: new Date().toISOString(),
           createdBy: currentUser,
-          emailAddress: formData.notificationEmail,
+          isRead: false,
           picture: downloadImgUrl,
         };
       } else {

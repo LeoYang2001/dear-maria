@@ -4,7 +4,7 @@ export interface TimeCapsule {
   message: string;
   unlockDate: string;
   createdDate: string;
-  emailAddress?: string;
+  isRead?: boolean;
   createdBy: "Maria" | "Leo";
   picture?: string;
 }
