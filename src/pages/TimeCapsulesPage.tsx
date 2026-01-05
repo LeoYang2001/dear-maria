@@ -3,7 +3,6 @@ import { Plus, Lock } from "lucide-react";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
 import TimeCapsuleCard from "../components/TimeCapsuleCard";
 import CreateTimeCapsuleModal from "../components/CreateTimeCapsuleModal";
-import { mockTimeCapsules } from "../data/mockTimeCapsules";
 import { getAllTimeCapsules } from "../apis/timeCapsuleApis";
 import "../styles/tabs.css";
 
@@ -12,7 +11,7 @@ const TimeCapsulesPage: React.FC = () => {
   const currentUserLowercase = currentUser?.toLowerCase() ?? null;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [capsules, setCapsules] = useState<TimeCapsule[]>(mockTimeCapsules);
+  const [capsules, setCapsules] = useState<TimeCapsule[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<"received" | "sent">("sent");
   const [isLoading, setIsLoading] = useState(true);
