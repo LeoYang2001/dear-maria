@@ -100,7 +100,7 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
           message: formData.message,
           unlockDate: formData.unlockDate.toISOString(),
           createdDate: new Date().toISOString(),
-          createdBy: currentUser,
+          createdBy: currentUser.toLowerCase() as "maria" | "leo",
           isRead: false,
           picture: downloadImgUrl,
         };
