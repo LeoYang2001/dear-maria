@@ -45,14 +45,22 @@ export const addTodoItem = async (
     const docRef = await addDoc(collection(db, TODOS_COLLECTION), todoData);
     console.log("Todo added with ID:", docRef.id);
 
-    //send notification email here
+    // Send notification email in the background (non-blocking)
     const recipient = createdBy === "maria" ? "Leo" : "Maria";
-    await sendEmail('account1', {
+    const accountType = recipient === "Leo" ? 'account1' : 'account2';
+    const senderName = createdBy === "maria" ? "Maria" : "Leo";
+
+    // Fire-and-forget: send email without awaiting
+    sendEmail(accountType, {
       to_name: recipient,
-      from_name: createdBy === "maria" ? "Maria" : "Leo",
+      from_name: senderName,
       task_title: title,
       task_description: description,
-      message: `A new task "${title}" has been added to your checklist!`,
+      name: 'Checklist',
+      message: `${senderName} just added a new task "${title}" to your checklist!`,
+    }).catch(error => {
+      console.error("Error sending email notification:", error);
+      // Don't throw - we don't want email failures to break the todo creation
     });
     
     return docRef.id;
@@ -75,10 +83,42 @@ export const updateTodoStatus = async (
 ): Promise<void> => {
   try {
     const todoRef = doc(db, TODOS_COLLECTION, todoId);
+    
+    // Fetch the todo to get its title and description for the email
+    const todoDoc = await getDocs(
+      query(collection(db, TODOS_COLLECTION), where("__name__", "==", todoId))
+    );
+    
+    let todoTitle = "Untitled Task";
+    let todoDescription = "";
+    if (!todoDoc.empty) {
+      const todoData = todoDoc.docs[0].data();
+      todoTitle = todoData.title || "Untitled Task";
+      todoDescription = todoData.description || "";
+    }
+    
+    // Update todo status
     await updateDoc(todoRef, {
       [`status.${user}`]: completed,
     });
-    console.log("Todo status updated:", todoId);
+    
+    // Send notification email in the background (non-blocking)
+    const recipient = user === "maria" ? "Leo" : "Maria";
+    const accountType = recipient === "Leo" ? 'account1' : 'account2';
+    
+    // Fire-and-forget: send email without awaiting
+    sendEmail(accountType, {
+      to_name: recipient,
+      from_name: user === "maria" ? "Maria" : "Leo",
+      task_title: todoTitle,
+      task_description: todoDescription,
+      name: 'Checklist',
+      message: `${user === "maria" ? "Maria" : "Leo"} has marked "${todoTitle}" as ${completed ? 'completed' : 'incomplete'}.`,
+    }).catch(error => {
+      console.error("Error sending email notification:", error);
+      // Don't throw - we don't want email failures to break the todo update
+    });
+    
   } catch (error) {
     console.error("Error updating todo status:", error);
     throw error;
@@ -165,7 +205,41 @@ export const deleteTodoItem = async (todoId: string): Promise<void> => {
   try {
     await deleteDoc(doc(db, TODOS_COLLECTION, todoId));
     console.log("Todo deleted:", todoId);
+
+    //send notification email in the background (non-blocking)
+    // Fetch the todo to get its title and description for the email
+    const todoDoc = await getDocs(
+      query(collection(db, TODOS_COLLECTION), where("__name__", "==", todoId))
+    );
+
+    let todoTitle = "Untitled Task";
+    let todoDescription = "";
+    let createdBy: "maria" | "leo" = "maria";
+    if (!todoDoc.empty) {
+      const todoData = todoDoc.docs[0].data();
+      todoTitle = todoData.title || "Untitled Task";
+      todoDescription = todoData.description || "";
+      createdBy = todoData.createdBy;
+    }
+
+    const recipient = createdBy === "maria" ? "Leo" : "Maria";
+    const accountType = recipient === "Leo" ? 'account1' : 'account2';
+    const senderName = createdBy === "maria" ? "Maria" : "Leo";
+
+    // Fire-and-forget: send email without awaiting
+    sendEmail(accountType, {
+      to_name: recipient,
+      from_name: senderName,
+      task_title: todoTitle,
+      task_description: todoDescription,
+      name: 'Checklist',
+      message: `${senderName} has deleted the task "${todoTitle}" from your checklist.`,
+    }).catch(error => {
+      console.error("Error sending email notification:", error);
+      // Don't throw - we don't want email failures to break the todo deletion
+    });
   } catch (error) {
+
     console.error("Error deleting todo:", error);
     throw error;
   }

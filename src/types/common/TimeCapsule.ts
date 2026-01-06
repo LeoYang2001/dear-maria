@@ -5,6 +5,6 @@ export interface TimeCapsule {
   unlockDate: string;
   createdDate: string;
   isRead?: boolean;
-  createdBy: "Maria" | "Leo";
+  createdBy: "maria" | "leo";
   picture?: string;
 }

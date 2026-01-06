@@ -28,6 +28,8 @@ const SavedPlacesSidebar: React.FC<SavedPlacesSidebarProps> = ({
   onFitAllPins,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+    const currentUser = localStorage.getItem("currentUser");
+  const currentUserLowercase = currentUser?.toLowerCase() ?? null;
 
   if (pins.length === 0) return null;
 
@@ -82,6 +84,7 @@ const SavedPlacesSidebar: React.FC<SavedPlacesSidebarProps> = ({
               isSelected={selectedPin === pin.id}
               onSelect={onPinSelect}
               onRemove={onPinRemove}
+              currentUserLowercase={currentUserLowercase as "maria" | "leo"}
             />
           ))}
         </div>

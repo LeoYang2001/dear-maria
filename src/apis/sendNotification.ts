@@ -10,14 +10,14 @@ interface EmailConfig {
 // Configuration for different email accounts
 const EMAIL_CONFIGS = {
   account1: {
-    publicKey: "h1-Vq5dd0YjBV-JFc",
-    serviceId: 'service_m2fuaz5',
-    templateId: 'template_cbk1w9k',
+    publicKey: "59eACLJDloIEotBQn", //leo
+    serviceId: 'service_8m223te',
+    templateId: 'template_ikvdtih',
   },
   account2: {
-    publicKey: "YOUR_SECOND_PUBLIC_KEY", // Replace with actual key
-    serviceId: 'YOUR_SECOND_SERVICE_ID', // Replace with actual service ID
-    templateId: 'YOUR_SECOND_TEMPLATE_ID', // Replace with actual template ID
+    publicKey: "RFNcndFJHHV3_JFeb", //maria
+    serviceId: 'service_tz1hmm1', 
+    templateId: 'template_l306mu3', 
   }
 } as const;
 

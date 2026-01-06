@@ -12,6 +12,7 @@ interface SavedPlaceItemProps {
   onRemove: (id: string) => void;
   lat: number;
   lng: number;
+  currentUserLowercase: "maria" | "leo";
 }
 
 const SavedPlaceItem: React.FC<SavedPlaceItemProps> = ({
@@ -24,15 +25,17 @@ const SavedPlaceItem: React.FC<SavedPlaceItemProps> = ({
   onRemove,
   lat,
   lng,
+  currentUserLowercase
 }) => {
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
+  
 
   const handleToggleStatus = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
       setIsTogglingStatus(true);
       const newType = type === "wishlist" ? "visited" : "wishlist";
-      await togglePinStatus(id, newType);
+      await togglePinStatus(id, newType,currentUserLowercase);
     } catch (error) {
       console.error("Error toggling pin status:", error);
     } finally {

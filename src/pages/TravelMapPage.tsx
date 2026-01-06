@@ -28,6 +28,8 @@ const TravelMapPage: React.FC = () => {
   const [hoveredSuggestion, setHoveredSuggestion] = useState<string | null>(
     null
   );
+  const currentUser = localStorage.getItem("currentUser");
+  const currentUserLowercase = currentUser?.toLowerCase() ?? null;
   // ✨ NEW STATE: Used to force the map to re-render with new defaults
   const [mapUpdateKey, setMapUpdateKey] = useState(0);
   // ✨ Image Modal State
@@ -124,7 +126,7 @@ const TravelMapPage: React.FC = () => {
         description: address,
         type,
       };
-      await addPin(newPin);
+      await addPin(newPin,currentUserLowercase as "maria" | "leo");
       console.log("newPin:", newPin);
       // setPins([...pins, newPin]);
       // setSelectedPin(newPin.id);
@@ -143,7 +145,7 @@ const TravelMapPage: React.FC = () => {
     if (!confirmed) return;
 
     try {
-      await deletePin(pinId);
+      await deletePin(pinId, currentUserLowercase as "maria" | "leo");
       setPins(pins.filter((pin) => pin.id !== pinId));
       if (selectedPin === pinId) {
         setSelectedPin(null);

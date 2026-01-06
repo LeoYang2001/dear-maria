@@ -9,22 +9,10 @@ import {
 } from "firebase/firestore";
 import type { Resolution } from "../types/common/Resolution";
 import { db } from "../firebase";
-import { mockResolutionData } from "../data/mockResolutionData";
+import { sendEmail } from "./sendNotification.ts";
 
 const YEARRESOLUTION_COLLECTION = "year_resolutions";
 
-/** * Add multiple resolutions to the database
- */
-export const addMockResolutionsToDatabase = async (): Promise<void> => {
-  for (const resolution of mockResolutionData) {
-    try {
-      await addResolution(resolution);
-      console.log(`Added resolution: ${resolution.text}`);
-    } catch (error) {
-      console.error(`Error adding resolution: ${resolution.text}`, error);
-    }
-  }
-};
 
 /**
  * Add a single resolution to the database
@@ -45,6 +33,26 @@ export const addResolution = async (
     );
 
     console.log("Year Resolution added with ID:", docRef.id);
+
+
+    // Send notification email in the background (non-blocking)
+    const recipient = newResolution.createdBy === "maria" ? "leo" : "maria";
+    const accountType = recipient === "leo" ? 'account1' : 'account2';
+    const senderName = newResolution.createdBy === "maria" ? "maria" : "leo";
+    
+    // Fire-and-forget: send email without awaiting
+    sendEmail(accountType, {
+      to_name: recipient,
+      from_name: senderName,
+      task_title: `New ${newResolution.category} Resolution`,
+      task_description: newResolution.text,
+      name: 'New Year Resolutions',
+      message: `${senderName} just added a new ${newResolution.category} resolution: "${newResolution.text}"`,
+    }).catch(error => {
+      console.error("Error sending email notification:", error);
+      // Don't throw - we don't want email failures to break the resolution creation
+    });
+
     return docRef.id;
   } catch (error) {
     console.error("Error adding Year Resolution:", error);

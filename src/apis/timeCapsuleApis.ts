@@ -1,6 +1,7 @@
 import { addDoc, collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import type { TimeCapsule } from "../types/common/TimeCapsule";
 import { db } from "../firebase";
+import { sendEmail } from "./sendNotification.ts";
 
 const TIMECAPSULES_COLLECTION = "time_capsules";
 
@@ -35,9 +36,30 @@ export const addTimeCapsule = async (
       collection(db, TIMECAPSULES_COLLECTION),
       timeCapsuleData
     );
-    // we need to schedule email notification here
-
+    
     console.log("Time Capsule added with ID:", docRef.id);
+
+    console.log('creted by', newTimeCapsule.createdBy)
+    
+    // Send notification email in the background (non-blocking)
+    const recipient = newTimeCapsule.createdBy === "maria" ? "leo" : "maria";
+    const accountType = recipient === "leo" ? 'account1' : 'account2';
+    const senderName = newTimeCapsule.createdBy === "maria" ? "maria" : "leo";
+
+    
+    // Fire-and-forget: send email without awaiting
+    sendEmail(accountType, {
+      to_name: recipient,
+      from_name: senderName,
+      task_title: newTimeCapsule.title,
+      task_description: `Unlock Date: ${new Date(newTimeCapsule.unlockDate).toLocaleDateString()}`,
+      name: 'Time Capsule',
+      message: `${senderName} just created a new time capsule "${newTimeCapsule.title}" for you! It will unlock on ${new Date(newTimeCapsule.unlockDate).toLocaleDateString()}.`,
+    }).catch(error => {
+      console.error("Error sending email notification:", error);
+      // Don't throw - we don't want email failures to break the time capsule creation
+    });
+    
     return docRef.id;
   } catch (error) {
     console.error("Error adding Time Capsule:", error);
