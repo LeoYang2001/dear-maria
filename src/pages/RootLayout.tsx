@@ -7,7 +7,6 @@ import TimeCapsulesPage from "./TimeCapsulesPage";
 import TravelMapPage from "./TravelMapPage";
 import NewYearResolutionsPage from "./NewYearResolutionsPage";
 import Header from "../components/Header";
-import BottomNav from "../components/BottomNav";
 
 type TabType =
   | "letters"
@@ -51,15 +50,7 @@ const RootLayout: React.FC = () => {
 
       <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto w-full">
         {renderContent()}
-        {/* Spacer so content clears the fixed bottom nav on mobile */}
-        <div className="lg:hidden bottom-nav-spacer" aria-hidden="true" />
       </main>
-
-      <BottomNav
-        setActiveTab={setActiveTab}
-        activeTab={activeTab}
-        currentUser={currentUser as "maria" | "leo" | null}
-      />
     </div>
   );
 };
