@@ -3,6 +3,33 @@
 
 @import "tailwindcss";
 
+/* Mobile bottom-sheet slide up (only on small screens) */
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 639px) {
+  .animate-sheet {
+    animation: sheetUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+/* Respect device safe area (notches / home indicator) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottom-nav-spacer {
+  height: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
 @keyframes heartbeat {
   0% {
     opacity: 1;

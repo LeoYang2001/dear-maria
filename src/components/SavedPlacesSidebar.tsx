@@ -27,16 +27,19 @@ const SavedPlacesSidebar: React.FC<SavedPlacesSidebarProps> = ({
   onPinRemove,
   onFitAllPins,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-    const currentUser = localStorage.getItem("currentUser");
+  // Start collapsed on small screens so the panel doesn't cover the map
+  const [isExpanded, setIsExpanded] = useState(
+    typeof window === "undefined" ? true : window.innerWidth >= 640
+  );
+  const currentUser = localStorage.getItem("currentUser");
   const currentUserLowercase = currentUser?.toLowerCase() ?? null;
 
   if (pins.length === 0) return null;
 
   return (
     <div
-      className={`absolute top-8 right-8 bg-white rounded-lg shadow-lg transition-all duration-300 ${
-        isExpanded ? "max-h-[80%] p-4 max-w-xs" : "p-3 max-w-fit"
+      className={`absolute top-3 right-3 sm:top-8 sm:right-8 bg-white rounded-lg shadow-lg transition-all duration-300 z-20 ${
+        isExpanded ? "max-h-[80%] p-4 max-w-[75%] sm:max-w-xs" : "p-3 max-w-fit"
       } flex flex-col`}
     >
       <div className="flex items-center justify-between mb-3">

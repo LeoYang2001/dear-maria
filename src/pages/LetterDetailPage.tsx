@@ -63,27 +63,27 @@ const LetterDetailPage: React.FC = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full h-screen    bg-linear-to-br from-pink-50 to-white p-8 flex flex-col "
+      className="w-full min-h-screen bg-linear-to-br from-pink-50 to-white p-4 sm:p-8 pt-20 sm:pt-20 flex flex-col "
     >
       {/* Back Button */}
       <button
         onClick={() => navigate("/main", { state: { disableAnimation: true } })}
-        className="flex absolute top-6 left-6 items-center space-x-2 text-pink-bright hover:text-pink-600 transition-colors mb-8 w-fit"
+        className="flex absolute top-4 left-4 sm:top-6 sm:left-6 items-center gap-2 text-pink-bright hover:text-pink-600 transition-colors w-fit z-10"
       >
-        <ArrowLeft size={26} />
-        <span className=" text-md cursor-pointer">Back</span>
+        <ArrowLeft size={24} />
+        <span className=" text-base cursor-pointer">Back</span>
       </button>
 
       {/* Letter Container */}
-      <div className="flex-1   flex flex-col items-center justify-start max-w-4xl mx-auto w-full">
+      <div className="flex-1 flex flex-col items-center justify-start max-w-4xl mx-auto w-full">
         {/* Letter Initial and Title - Same Row */}
-        <div className="w-full flex items-baseline justify-center gap-4 mb-12">
+        <div className="w-full flex items-baseline justify-center gap-3 sm:gap-4 mb-6 sm:mb-12">
           {/* Letter Initial - Shared Element */}
           <motion.div
             layoutId={`letter-${letter.id}`}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
           >
-            <div className="text-8xl font-bold text-pink-bright leading-tight">
+            <div className="text-6xl sm:text-8xl font-bold text-pink-bright leading-tight">
               {letter.letter}
             </div>
           </motion.div>
@@ -93,7 +93,7 @@ const LetterDetailPage: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl font-elegant font-bold text-gray-900 flex-1 leading-tight"
+            className="text-xl sm:text-3xl font-elegant font-bold text-gray-900 flex-1 leading-tight"
           >
             {letter.title.slice(1, letter.title.length)}
           </motion.h1>
@@ -101,17 +101,14 @@ const LetterDetailPage: React.FC = () => {
 
         {/* Letter Content - Two Column Card */}
         <motion.div
-          style={{
-            width: "70vw",
-          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="bg-white rounded-3xl shadow-2xl overflow-hidden  mt-6"
+          className="bg-white rounded-3xl shadow-2xl overflow-hidden mt-2 sm:mt-6 w-full lg:w-[70vw] max-w-4xl"
         >
-          <div className="flex w-full h-[60vh] ">
+          <div className="flex flex-col lg:flex-row w-full lg:h-[60vh] ">
             {/* Left Side - Letter Picture */}
-            <div className="w-1/2 bg-linear-to-br from-pink-50 to-pink-100 flex items-center justify-center p-8">
+            <div className="w-full lg:w-1/2 h-56 sm:h-72 lg:h-auto bg-linear-to-br from-pink-50 to-pink-100 flex items-center justify-center p-4 sm:p-8">
               {letter.pic_url ? (
                 <motion.img
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -137,8 +134,8 @@ const LetterDetailPage: React.FC = () => {
             </div>
 
             {/* Right Side - Letter Content */}
-            <div className="w-2/3 p-4  flex flex-col relative overflow-y-auto ">
-              <div className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap flex-1">
+            <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col relative overflow-y-auto max-h-[50vh] lg:max-h-none">
+              <div className="text-sm sm:text-base leading-relaxed text-gray-700 whitespace-pre-wrap flex-1 mt-8 lg:mt-0">
                 {skipAnimation ? (
                   <p>{letter.content}</p>
                 ) : (

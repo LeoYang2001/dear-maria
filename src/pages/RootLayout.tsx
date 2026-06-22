@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import LettersPage from "./LettersPage";
@@ -7,6 +7,7 @@ import TimeCapsulesPage from "./TimeCapsulesPage";
 import TravelMapPage from "./TravelMapPage";
 import NewYearResolutionsPage from "./NewYearResolutionsPage";
 import Header from "../components/Header";
+import BottomNav from "../components/BottomNav";
 
 type TabType =
   | "letters"
@@ -20,6 +21,12 @@ const RootLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>(
     currentUser === "leo" ? "checklist" : "letters"
   );
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Always start a newly-opened tab scrolled to the top
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, left: 0 });
+  }, [activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -39,12 +46,20 @@ const RootLayout: React.FC = () => {
   };
 
   return (
-    <div className=" w-screen h-screen   flex  flex-col ">
+    <div className="w-screen h-screen flex flex-col overflow-hidden">
       <Header setActiveTab={setActiveTab} activeTab={activeTab} />
 
-      <main className=" h-[calc(100%-80px)] overflow-scroll   w-full ">
+      <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto w-full">
         {renderContent()}
+        {/* Spacer so content clears the fixed bottom nav on mobile */}
+        <div className="lg:hidden bottom-nav-spacer" aria-hidden="true" />
       </main>
+
+      <BottomNav
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+        currentUser={currentUser as "maria" | "leo" | null}
+      />
     </div>
   );
 };

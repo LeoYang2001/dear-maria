@@ -132,13 +132,13 @@ const ChecklistPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-8">
+    <div className="min-h-full select-none w-full  flex flex-col justify-start items-center pt-8 px-4 sm:px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-8 w-full">
-        <h1 className="text-3xl font-elegant text-gray-900 flex-1 leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-elegant text-gray-900 leading-tight text-center">
           Our Checklist
         </h1>
-        <p className="text-lg text-center text-gray-400 mt-4">
+        <p className="text-base sm:text-lg text-center text-gray-400 mt-4">
           Adventures and moments we want to share together
         </p>
       </div>
@@ -190,7 +190,7 @@ const ChecklistPage: React.FC = () => {
 
       {/* Checklist Items */}
       <div
-        className="w-full  flex-1 pb-6  max-w-3xl px-4 space-y-3 max-h-[60vh] overflow-y-auto "
+        className="w-full  flex-1 pb-6  max-w-3xl px-1 sm:px-4 space-y-3 lg:max-h-[60vh] lg:overflow-y-auto "
         style={{ scrollbarWidth: "none" }}
       >
         <style>{`

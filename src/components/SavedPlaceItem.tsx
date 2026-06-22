@@ -53,10 +53,7 @@ const SavedPlaceItem: React.FC<SavedPlaceItemProps> = ({
 
   return (
     <div
-      style={{
-        minWidth: "240px",
-      }}
-      className={`p-2 rounded cursor-pointer transition-colors border-l-4 ${
+      className={`w-full sm:min-w-[240px] p-2 rounded cursor-pointer transition-colors border-l-4 ${
         isSelected ? pinBgColor : selectedBg
       }`}
       onClick={() => onSelect(lat, lng, id)}

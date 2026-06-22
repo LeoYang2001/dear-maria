@@ -96,35 +96,35 @@ const AuthPage: React.FC = () => {
       style={{
         backgroundColor: "#fff8f7",
       }}
-      className="flex h-screen w-screen items-center justify-center px-4"
+      className="flex min-h-screen w-screen items-center justify-center px-4 py-8 overflow-y-auto"
     >
-      <div className="w-[40%] bg-white border border-gray-50 rounded-3xl p-12 shadow-lg">
+      <div className="w-full max-w-md lg:max-w-lg bg-white border border-gray-50 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-lg">
         {/* Header */}
-        <div className="mb-12 flex flex-col items-center text-center">
+        <div className="mb-8 sm:mb-12 flex flex-col items-center text-center">
           <HeartBeat />
-          <h1 className="font-elegant mb-3 text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="font-elegant mb-3 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
             Every little moment we share lives here.
           </h1>
-          <p className="text-lg leading-relaxed text-gray-400">
+          <p className="text-base sm:text-lg leading-relaxed text-gray-400">
             Choose your character and enter your password
           </p>
         </div>
 
         {/* Character Selection */}
-        <div className="mb-8 grid grid-cols-2 gap-6">
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-6">
           {characters.map((character) => (
             <button
               key={character.id}
               onClick={() => setSelectedCharacter(character.id)}
               onMouseEnter={() => handleMouseEnter(character.id)}
               onMouseLeave={() => handleMouseLeave()}
-              className={`character-button group cursor-pointer rounded-2xl p-8 transition-all duration-300 border-2 ${
+              className={`character-button group cursor-pointer rounded-2xl p-4 sm:p-8 transition-all duration-300 border-2 ${
                 selectedCharacter === character.id
                   ? "selected border-pink-bright bg-pink-light/10 shadow-lg"
                   : "border-gray-200 hover:border-pink-light"
               }`}
             >
-              <div className="character-gif mb-12 flex justify-center">
+              <div className="character-gif mb-6 sm:mb-12 flex justify-center">
                 <img
                   ref={character.id === "maria" ? mariaImageRef : leoImageRef}
                   src={
@@ -133,14 +133,14 @@ const AuthPage: React.FC = () => {
                       : character.imagePng
                   }
                   alt={character.name}
-                  className="h-32 w-32 object-contain"
+                  className="h-24 w-24 sm:h-32 sm:w-32 object-contain"
                   style={{
                     animationIterationCount:
                       character.id === "maria" ? "1" : "infinite",
                   }}
                 />
               </div>
-              <h2 className="text-2xl font-semibold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                 {character.name}
               </h2>
             </button>

@@ -167,14 +167,19 @@ const CreateTimeCapsuleModal: React.FC<CreateTimeCapsuleModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             onClick={handleClose}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-50 flex  items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl  w-[30vw] h-[76vh] flex flex-col justify-start overflow-y-auto"
+              className="animate-sheet bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-md h-[88vh] sm:h-[76vh] flex flex-col justify-start overflow-y-auto"
             >
+              {/* Drag handle (mobile) */}
+              <div className="sm:hidden flex justify-center pt-2.5 pb-1 shrink-0">
+                <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+              </div>
+
               {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center rounded-t-3xl">
+              <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center sm:rounded-t-3xl">
                 <div>
                   <h2 className="text-2xl font-elegant font-semibold text-gray-900">
                     Create a Time Capsule

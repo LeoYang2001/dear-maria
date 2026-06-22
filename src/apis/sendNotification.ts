@@ -34,19 +34,19 @@ export const sendEmail = async (
 ) => {
   const config = EMAIL_CONFIGS[account];
 
-  try {
-    // Initialize with the specific account's public key
-    emailjs.init(config.publicKey);
+  // try {
+  //   // Initialize with the specific account's public key
+  //   emailjs.init(config.publicKey);
 
-    const response = await emailjs.send(
-      config.serviceId,
-      config.templateId,
-      templateParams
-    );
-    console.log("✅ Email sent successfully!", response.status, response.text);
-    return true;
-  } catch (error) {
-    console.error("❌ Failed to send email:", error);
-    return false;
-  }
+  //   const response = await emailjs.send(
+  //     config.serviceId,
+  //     config.templateId,
+  //     templateParams
+  //   );
+  //   console.log("✅ Email sent successfully!", response.status, response.text);
+  //   return true;
+  // } catch (error) {
+  //   console.error("❌ Failed to send email:", error);
+  //   return false;
+  // }
 };

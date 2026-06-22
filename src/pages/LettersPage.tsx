@@ -31,13 +31,13 @@ const LettersPage: React.FC = () => {
   };
 
   return (
-    <div className=" w-full h-full flex flex-col justify-start items-center pt-36  ">
-      <div className=" w-[80%] h-[30%]  flex flex-row justify-center items-center ">
+    <div className=" w-full min-h-full flex flex-col justify-start items-center pt-12 sm:pt-24 lg:pt-36 px-4 pb-12 ">
+      <div className=" w-full max-w-5xl flex flex-row flex-wrap justify-center items-center ">
         {lettersInfo.slice(0, 5).map((letter, index) => (
           <motion.div
             key={letter.id}
             layoutId={`letter-${letter.id}`}
-            className={`px-3 py-3 letterDiv cursor-pointer relative ${
+            className={`px-3 py-3 letterDiv cursor-pointer relative rounded-3xl bg-white/70 shadow-sm sm:bg-transparent sm:shadow-none ${
               visitedLetterIds.includes(letter.id) ? "selected" : ""
             }`}
             initial={
@@ -57,18 +57,18 @@ const LettersPage: React.FC = () => {
                 : { type: "spring", stiffness: 300, damping: 30, delay: 0 }
             }
             style={{
-              height: 180,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              margin: "0 15px",
+              margin: "8px clamp(6px, 1.5vw, 15px)",
             }}
             onClick={() => handleLetterClick(letter.id, letter)}
             whileHover={{ scale: 1.05 }}
           >
             <h2
               style={{
-                fontSize: 120,
+                fontSize: "clamp(56px, 11vw, 120px)",
+                lineHeight: 1,
               }}
             >
               {letter.letter}
@@ -84,12 +84,12 @@ const LettersPage: React.FC = () => {
           </motion.div>
         ))}
       </div>
-      <div className=" w-[85%] h-[30%] flex flex-row justify-center items-center ">
+      <div className=" w-full max-w-5xl flex flex-row flex-wrap justify-center items-center ">
         {lettersInfo.slice(5, 14).map((letter, index) => (
           <motion.div
             key={letter.id}
             layoutId={`letter-${letter.id}`}
-            className={`px-3 py-3 letterDiv cursor-pointer relative ${
+            className={`px-3 py-3 letterDiv cursor-pointer relative rounded-3xl bg-white/70 shadow-sm sm:bg-transparent sm:shadow-none ${
               visitedLetterIds.includes(letter.id) ? "selected" : ""
             }`}
             initial={
@@ -109,19 +109,18 @@ const LettersPage: React.FC = () => {
                 : { type: "spring", stiffness: 300, damping: 30, delay: 0 }
             }
             style={{
-              height: 180,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-
-              margin: "0 15px",
+              margin: "8px clamp(6px, 1.5vw, 15px)",
             }}
             onClick={() => handleLetterClick(letter.id, letter)}
             whileHover={{ scale: 1.05 }}
           >
             <h2
               style={{
-                fontSize: 120,
+                fontSize: "clamp(56px, 11vw, 120px)",
+                lineHeight: 1,
               }}
             >
               {letter.letter}

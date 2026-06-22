@@ -21,8 +21,12 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGreeting, setShowGreeting] = useState(true);
   const [position, setPosition] = useState({
-    x: window.innerWidth - 600,
-    y: window.innerHeight - 120,
+    x:
+      window.innerWidth < 640
+        ? Math.max(12, window.innerWidth - 170)
+        : window.innerWidth - 600,
+    // Sit above the mobile bottom tab bar; closer to the edge on desktop
+    y: window.innerWidth < 1024 ? window.innerHeight - 170 : window.innerHeight - 110,
   });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -219,7 +223,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         }}
       >
         <div
-          className="bg-white  rounded-full shadow-lg px-6 py-4 flex items-center gap-4 border border-gray-200 hover:shadow-xl transition-shadow cursor-grab active:cursor-grabbing"
+          className="bg-white  rounded-full shadow-lg px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3 sm:gap-4 border border-gray-200 hover:shadow-xl transition-shadow cursor-grab active:cursor-grabbing"
           onMouseDown={handleMouseDown}
         >
           {/* Play/Pause Button */}
@@ -236,7 +240,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           </button>
 
           {/* Song Info */}
-          <div className="flex flex-col min-w-max">
+          <div className="hidden sm:flex flex-col min-w-max">
             <p className="text-sm font-semibold text-gray-900">
               Happy Birthday
             </p>
@@ -244,7 +248,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
           </div>
 
           {/* Progress Bar */}
-          <div className="flex items-center gap-2 min-w-48">
+          <div className="hidden sm:flex items-center gap-2 min-w-48">
             <span className="text-xs text-gray-500 font-medium">
               {formatTime(currentTime)}
             </span>
@@ -296,7 +300,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
             {/* Video Container with rounded corners and shadow */}
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative w-8/12 h-4/6 rounded-3xl overflow-hidden shadow-2xl border border-white/20 backdrop-blur-sm"
+              className="relative w-11/12 sm:w-8/12 h-2/5 sm:h-4/6 rounded-3xl overflow-hidden shadow-2xl border border-white/20 backdrop-blur-sm"
             >
               {/* Video Player */}
               <video

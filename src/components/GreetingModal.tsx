@@ -20,8 +20,8 @@ const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* Greeting Modal */}
-      <div className="relative max-w-2xl w-full mx-auto px-6 py-12">
-        <div className="bg-white rounded-3xl shadow-2xl p-12 text-center space-y-8 animate-fade-in">
+      <div className="relative max-w-2xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-12 text-center space-y-6 sm:space-y-8 animate-fade-in">
           {/* Decorative heart emoji */}
           <div className=" flex  justify-center items-center">
             <HeartBeat size={48} />
@@ -29,10 +29,10 @@ const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
 
           {/* Main greeting */}
           <div className="space-y-4 relative">
-            <h1 className="text-3xl font-bold bg-linear-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
               Dear Maria,
             </h1>
-            <p className="text-xl text-gray-600 text-left min-h-48">
+            <p className="text-base sm:text-xl text-gray-600 text-left min-h-48">
               {skipAnimation ? (
                 <span>{greetingText}</span>
               ) : (
@@ -65,7 +65,7 @@ const GreetingModal: React.FC<GreetingModalProps> = ({ onClose, onBegin }) => {
           </p>
 
           {/* Action buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               onClick={() => onBegin(false)}
               className="flex-1 px-8 py-3 bg-pink-400 text-white rounded-full font-semibold hover:shadow-lg hover:bg-pink-500 cursor-pointer transition-all duration-200 hover:scale-105"

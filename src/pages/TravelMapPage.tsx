@@ -25,9 +25,6 @@ const TravelMapPage: React.FC = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [pins, setPins] = useState<PlacePin[]>([]);
   const [selectedPin, setSelectedPin] = useState<string | null>(null);
-  const [hoveredSuggestion, setHoveredSuggestion] = useState<string | null>(
-    null
-  );
   const currentUser = localStorage.getItem("currentUser");
   const currentUserLowercase = currentUser?.toLowerCase() ?? null;
   // ✨ NEW STATE: Used to force the map to re-render with new defaults
@@ -105,7 +102,6 @@ const TravelMapPage: React.FC = () => {
     setShowSuggestions(false);
     clearSuggestions();
     setValue("");
-    setHoveredSuggestion(null);
     setIsLoading(true);
 
     try {
@@ -243,13 +239,13 @@ const TravelMapPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full select-none  w-full  pb-12 flex flex-col justify-start items-center pt-8 px-8">
+    <div className="min-h-full select-none  w-full  pb-12 flex flex-col justify-start items-center pt-8 px-4 sm:px-8">
       {/* Header */}
       <div className="flex flex-col justify-center items-center mb-8 w-full">
-        <h1 className="text-3xl font-elegant text-gray-900 flex-1 leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-elegant text-gray-900 leading-tight text-center">
           Our Travel Map
         </h1>
-        <p className="text-lg text-center text-gray-400 mt-4">
+        <p className="text-base sm:text-lg text-center text-gray-400 mt-4">
           Every place we've explored together
         </p>
       </div>
@@ -279,47 +275,42 @@ const TravelMapPage: React.FC = () => {
             {data.map(({ place_id, description, structured_formatting }) => (
               <div
                 key={place_id}
-                className="relative w-full border-b border-gray-200 last:border-b-0"
-                onMouseEnter={() => setHoveredSuggestion(place_id)}
-                onMouseLeave={() => setHoveredSuggestion(null)}
+                className="w-full border-b border-gray-200 last:border-b-0 px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-2 hover:bg-gray-50 transition-colors"
               >
-                <button
-                  type="button"
-                  disabled={hoveredSuggestion === place_id}
-                  className="w-full text-left px-6 py-3 hover:bg-gray-100 transition-colors disabled:bg-gray-100"
-                >
-                  <div className="font-medium text-gray-900">
+                {/* Location text */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 truncate">
                     {structured_formatting?.main_text ||
                       description.split(",")[0]}
                   </div>
-                  <div className="text-sm text-gray-500">{description}</div>
-                </button>
-
-                {/* Hover Overlay Buttons */}
-                {hoveredSuggestion === place_id && (
-                  <div className="absolute inset-0 bg-linear-to-r from-transparent to-white/95 flex items-center justify-end gap-2 pr-6 rounded-lg">
-                    <button
-                      type="button"
-                      onClick={() => handleSelect(description, "wishlist")}
-                      className="px-3 py-1 cursor-pointer bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors shadow-md"
-                    >
-                      ❤️ Wishlist
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSelect(description, "visited")}
-                      className="px-3 py-1 cursor-pointer bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors shadow-md"
-                    >
-                      ✓ Visited
-                    </button>
+                  <div className="text-sm text-gray-500 truncate">
+                    {description}
                   </div>
-                )}
+                </div>
+
+                {/* Always-visible action buttons (tap-friendly on touch) */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(description, "wishlist")}
+                    className="flex-1 sm:flex-none px-3 py-1.5 cursor-pointer bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 active:scale-95 transition-all shadow-sm"
+                  >
+                    ❤️ Wishlist
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(description, "visited")}
+                    className="flex-1 sm:flex-none px-3 py-1.5 cursor-pointer bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 active:scale-95 transition-all shadow-sm"
+                  >
+                    ✓ Visited
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </form>
-      <div className=" mt-8 w-[60vw] h-[60vh] relative rounded-2xl overflow-hidden">
+      <div className=" mt-6 sm:mt-8 w-full max-w-5xl h-[50vh] sm:h-[60vh] relative rounded-2xl overflow-hidden">
         <Map
           // ✨ ADD THE KEY HERE to force re-render
           key={mapUpdateKey}

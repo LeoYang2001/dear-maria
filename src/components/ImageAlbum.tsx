@@ -91,16 +91,15 @@ const ImageAlbum: React.FC<ImageAlbumProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 "
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 "
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="bg-gray-900 rounded-3xl shadow-2xl flex flex-col  overflow-hidden"
-              style={{ width: "40vw", height: "80vh" }}
+              className="animate-sheet bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden w-full sm:max-w-2xl h-[90vh] sm:h-[80vh]"
             >
               {/* Header */}
-              <div className="flex justify-between items-center px-6 py-4 bg-[#fff8f7] border-b ">
+              <div className="flex justify-between items-center px-5 sm:px-6 py-4 bg-[#fff8f7] border-b ">
                 <h2 className="text-2xl font-semibold text-black">{title}</h2>
                 <button
                   onClick={onClose}

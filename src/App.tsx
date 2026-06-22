@@ -13,7 +13,6 @@ import "./App.css";
 import RootLayout from "./pages/RootLayout";
 import LetterDetailPage from "./pages/LetterDetailPage";
 import MusicPlayer from "./components/MusicPlayer";
-import MobileBlocker from "./components/MobileBlocker";
 import { store, type RootState } from "./redux/store";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
@@ -37,7 +36,6 @@ function AppContent() {
 
   return (
     <>
-      <MobileBlocker />
       <AnimatePresence mode="wait">
         <Routes>
           <Route path="/auth" element={<AuthPage />} />

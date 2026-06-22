@@ -73,13 +73,13 @@ const TimeCapsulesPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full select-none w-full flex flex-col justify-start items-center pt-8 px-8">
+    <div className="min-h-full select-none w-full flex flex-col justify-start items-center pt-8 px-4 sm:px-8">
       {/* Header */}
-      <div className="flex flex-col justify-center items-center mb-12 w-full">
-        <h1 className="text-3xl font-elegant text-gray-900 leading-tight">
+      <div className="flex flex-col justify-center items-center mb-8 sm:mb-12 w-full">
+        <h1 className="text-2xl sm:text-3xl font-elegant text-gray-900 leading-tight text-center">
           Time Capsules
         </h1>
-        <p className="text-lg text-center text-gray-400 mt-4">
+        <p className="text-base sm:text-lg text-center text-gray-400 mt-4">
           Letters from the past, sealed with trust, waiting for their moment
         </p>
       </div>
@@ -170,9 +170,9 @@ const TimeCapsulesPage: React.FC = () => {
 
       {/* Time Capsules Grid */}
       {!isLoading && currentCapsules.length > 0 && (
-        <div className="w-full h-[60vh] flex flex-col relative  items-center">
+        <div className="w-full flex-1 flex flex-col relative items-center">
           {/* Grid */}
-          <div className="w-full grid grid-cols-4 gap-12   px-20 mb-8">
+          <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 px-2 sm:px-8 lg:px-12 mb-8">
             {currentCapsules.map((capsule) => (
               <TimeCapsuleCard
                 key={capsule.id}
@@ -184,7 +184,7 @@ const TimeCapsulesPage: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center absolute justify-center gap-2  bottom-12">
+            <div className="flex items-center flex-wrap justify-center gap-2 mt-4 mb-8">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}

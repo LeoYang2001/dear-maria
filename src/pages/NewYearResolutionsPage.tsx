@@ -112,17 +112,17 @@ const NewYearResolutionsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full w-full flex flex-col items-center pt-8 px-8 pb-12 bg-linear-to-br from-pink-50 via-white to-purple-50">
+    <div className="min-h-full w-full flex flex-col items-center pt-8 px-4 sm:px-8 pb-12 bg-linear-to-br from-pink-50 via-white to-purple-50">
       {/* Header */}
-      <div className="flex flex-col justify-center items-center mb-12 w-full max-w-4xl">
-        <div className="flex items-center gap-3 mb-4">
-          <Sparkles size={32} className="text-pink-500" />
-          <h1 className="text-4xl font-elegant text-gray-900 leading-tight">
+      <div className="flex flex-col justify-center items-center mb-8 sm:mb-12 w-full max-w-4xl">
+        <div className="flex items-center gap-2 sm:gap-3 mb-4">
+          <Sparkles className="text-pink-500 w-6 h-6 sm:w-8 sm:h-8" />
+          <h1 className="text-2xl sm:text-4xl font-elegant text-gray-900 leading-tight text-center">
             2026 Resolutions
           </h1>
-          <Sparkles size={32} className="text-pink-500" />
+          <Sparkles className="text-pink-500 w-6 h-6 sm:w-8 sm:h-8" />
         </div>
-        <p className="text-lg text-center text-gray-500 mt-2">
+        <p className="text-base sm:text-lg text-center text-gray-500 mt-2">
           A new year, new dreams, new adventures together 💕
         </p>
       </div>
@@ -130,7 +130,7 @@ const NewYearResolutionsPage: React.FC = () => {
       {/* Main Content */}
       <div className="w-full max-w-4xl flex flex-col gap-8">
         {/* Add Resolution Form */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+        <div className="bg-white rounded-3xl shadow-xl p-5 sm:p-8 border border-gray-100">
           <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Target size={24} className="text-pink-500" />
             Add a New Resolution
@@ -158,19 +158,19 @@ const NewYearResolutionsPage: React.FC = () => {
           </div>
 
           {/* Input Field */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <input
               type="text"
               value={newResolution}
               onChange={(e) => setNewResolution(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="What do you want to achieve in 2026?"
-              className="flex-1 px-6 py-4 rounded-2xl border border-gray-200 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-100 placeholder-gray-400 transition-all text-lg"
+              className="flex-1 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl border border-gray-200 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-100 placeholder-gray-400 transition-all text-base sm:text-lg"
             />
             <button
               onClick={handleAddResolution}
               disabled={!newResolution.trim() || isAdding}
-              className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl font-semibold flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 shadow-lg"
+              className="px-8 py-3 sm:py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 shadow-lg shrink-0"
             >
               {isAdding ? (
                 <Loader2 size={24} className="animate-spin" />
@@ -217,7 +217,7 @@ const NewYearResolutionsPage: React.FC = () => {
               )}
 
               {/* My Resolutions List */}
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 lg:max-h-[400px] lg:overflow-y-auto lg:pr-2 custom-scrollbar">
                 <AnimatePresence>
                   {myResolutions.map((resolution, index) => (
                     <motion.div
@@ -243,9 +243,10 @@ const NewYearResolutionsPage: React.FC = () => {
                       </div>
                       <button
                         onClick={() => handleRemoveResolution(resolution.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/50 rounded-full"
+                        aria-label="Remove resolution"
+                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 hover:bg-white/50 active:scale-90 rounded-full shrink-0"
                       >
-                        <X size={16} className="text-gray-500" />
+                        <X size={18} className="text-gray-500" />
                       </button>
                     </motion.div>
                   ))}
@@ -284,7 +285,7 @@ const NewYearResolutionsPage: React.FC = () => {
               )}
 
               {/* Partner's Resolutions List */}
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 lg:max-h-[400px] lg:overflow-y-auto lg:pr-2 custom-scrollbar">
                 <AnimatePresence>
                   {partnerResolutions.map((resolution, index) => (
                     <motion.div
