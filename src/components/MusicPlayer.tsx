@@ -25,8 +25,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       window.innerWidth < 640
         ? Math.max(12, window.innerWidth - 170)
         : window.innerWidth - 600,
-    // Sit above the mobile bottom tab bar; closer to the edge on desktop
-    y: window.innerWidth < 1024 ? window.innerHeight - 170 : window.innerHeight - 110,
+    y: window.innerHeight - 110,
   });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
